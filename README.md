@@ -31,7 +31,7 @@ Patients can search doctors, book appointments, and attend video consultations, 
 
 ## 🧰 Tech Stack
 
-- Frontend: React.js + Tailwind CSS
+- Frontend: NextJS + Tailwind CSS
 - Backend: Node.js + Express
 - Database: MongoDB Atlas
 - DevOps: Docker
