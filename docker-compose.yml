@@ -1,0 +1,170 @@
+version: '3.9'
+
+services:
+  # ── Infrastructure ─────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: mediconnect-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: mediconnect
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: mediconnect-rabbitmq
+    restart: unless-stopped
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  # ── API Gateway (port 3000) ────────────────────────────────
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: mediconnect-api-gateway
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file: .env
+    depends_on:
+      - auth-service
+      - patient-service
+      - doctor-service
+      - appointment-service
+      - payment-service
+      - notification-service
+      - telemedicine-service
+      - ai-symptom-service
+
+  # ── Auth Service (port 4000) ───────────────────────────────
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-auth-service
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  # ── Patient Service (port 4001) ────────────────────────────
+  patient-service:
+    build:
+      context: ./services/patient-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-patient-service
+    restart: unless-stopped
+    ports:
+      - '4001:4001'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  # ── Doctor Service (port 4002) ─────────────────────────────
+  doctor-service:
+    build:
+      context: ./services/doctor-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-doctor-service
+    restart: unless-stopped
+    ports:
+      - '4002:4002'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  # ── Appointment Service (port 4003) ────────────────────────
+  appointment-service:
+    build:
+      context: ./services/appointment-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-appointment-service
+    restart: unless-stopped
+    ports:
+      - '4003:4003'
+    env_file: .env
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  # ── Payment Service (port 4004) ────────────────────────────
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-payment-service
+    restart: unless-stopped
+    ports:
+      - '4004:4004'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  # ── Notification Service (port 4005) ──────────────────────
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-notification-service
+    restart: unless-stopped
+    ports:
+      - '4005:4005'
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - mongodb
+
+  # ── Telemedicine Service (port 4006) ──────────────────────
+  telemedicine-service:
+    build:
+      context: ./services/telemedicine-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-telemedicine-service
+    restart: unless-stopped
+    ports:
+      - '4006:4006'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  # ── AI Symptom Service (port 4007) ────────────────────────
+  ai-symptom-service:
+    build:
+      context: ./services/ai-symptom-service
+      dockerfile: Dockerfile
+    container_name: mediconnect-ai-symptom-service
+    restart: unless-stopped
+    ports:
+      - '4007:4007'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  # ── Client (port 80) ──────────────────────────────────────
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: mediconnect-client
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    env_file: .env
+    depends_on:
+      - api-gateway
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
