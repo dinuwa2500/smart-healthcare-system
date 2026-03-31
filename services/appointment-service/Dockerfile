@@ -1,10 +1,11 @@
 # ── Stage 1: development ────────────────────────────────────
 FROM node:18-alpine AS development
 WORKDIR /app
-COPY services/api-gateway/package*.json ./
+COPY services/appointment-service/package*.json ./
 RUN npm install
-COPY services/api-gateway/ .
-EXPOSE 3000
+COPY shared/ /shared/
+COPY services/appointment-service/ .
+EXPOSE 4003
 CMD ["node", "src/index.js"]
 
 # ── Stage 2: production ─────────────────────────────────────
@@ -13,11 +14,12 @@ WORKDIR /app
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-COPY services/api-gateway/package*.json ./
+COPY services/appointment-service/package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
 
-COPY --chown=appuser:appgroup services/api-gateway/ .
+COPY shared/ /shared/
+COPY --chown=appuser:appgroup services/appointment-service/ .
 
 USER appuser
-EXPOSE 3000
+EXPOSE 4003
 CMD ["node", "src/index.js"]
