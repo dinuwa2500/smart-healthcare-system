@@ -24,6 +24,14 @@ router.post(
 // POST /payments/webhook  (Stripe – NO auth, raw body already parsed in index.js)
 router.post('/webhook', ctrl.webhook);
 
+// POST /payments/:id/confirm (patient manually confirms success)
+router.post(
+  '/:id/confirm',
+  extractUser,
+  [param('id').isMongoId().withMessage('Invalid payment ID')],
+  ctrl.confirmPayment
+);
+
 // GET /payments/admin/all  (admin)
 router.get(
   '/admin/all',

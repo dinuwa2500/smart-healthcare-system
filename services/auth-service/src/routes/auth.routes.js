@@ -48,4 +48,11 @@ router.patch(
   ctrl.updateStatus
 );
 
+// GET /auth/users/:id  (Internal/Admin lookup)
+router.get(
+  '/users/:id',
+  [param('id').isMongoId().withMessage('Invalid user id')],
+  ctrl.getById
+);
+
 module.exports = router;

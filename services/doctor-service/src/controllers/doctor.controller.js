@@ -63,7 +63,19 @@ exports.listAll = async (req, res) => {
 // ── GET /doctors/:id  (PUBLIC) ───────────────────────────────
 exports.getById = async (req, res) => {
   try {
-    const doctor = await DoctorProfile.findById(req.params.id).select('-__v');
+    const { id } = req.params;
+    let doctor = null;
+
+    // 1. Try by profile _id
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      doctor = await DoctorProfile.findById(id).select('-__v');
+    }
+
+    // 2. Try by authUserId (fallback)
+    if (!doctor) {
+      doctor = await DoctorProfile.findOne({ authUserId: id }).select('-__v');
+    }
+
     if (!doctor) return fail(res, 'Doctor not found', 404);
     return ok(res, doctor);
   } catch (err) {
@@ -75,7 +87,17 @@ exports.getById = async (req, res) => {
 // ── GET /doctors/:id/slots  (PUBLIC – ?date=YYYY-MM-DD) ─────
 exports.getSlots = async (req, res) => {
   try {
-    const doctor = await DoctorProfile.findById(req.params.id);
+    const { id } = req.params;
+    let doctor = null;
+
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      doctor = await DoctorProfile.findById(id);
+    }
+
+    if (!doctor) {
+      doctor = await DoctorProfile.findOne({ authUserId: id });
+    }
+
     if (!doctor) return fail(res, 'Doctor not found', 404);
 
     const filter = { doctorId: doctor._id, isActive: true };

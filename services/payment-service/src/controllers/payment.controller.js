@@ -5,7 +5,10 @@ const { validationResult } = require('express-validator');
 const Payment  = require('../models/Payment.model');
 const { ok, fail } = require('../utils/response');
 const mq       = require('../publishers/rabbitmq');
-const { confirmAppointment } = require('../utils/appointmentClient');
+const { confirmAppointment, getAppointment } = require('../utils/appointmentClient');
+const { getPatient } = require('../utils/patientClient');
+const { getDoctor }  = require('../utils/doctorClient');
+const { getUser }    = require('../utils/authClient');
 
 // ── POST /payments/create-intent ─────────────────────────────
 exports.createIntent = async (req, res) => {
@@ -57,34 +60,7 @@ exports.webhook = async (req, res) => {
   const intent = event.data.object;
 
   if (event.type === 'payment_intent.succeeded') {
-    try {
-      const payment = await Payment.findOneAndUpdate(
-        { stripePaymentIntentId: intent.id },
-        {
-          status:        'succeeded',
-          stripeChargeId: intent.latest_charge || null,
-        },
-        { new: true }
-      );
-
-      if (payment) {
-        // Best-effort PATCH to appointment-service
-        confirmAppointment(payment.appointmentId, payment._id.toString()).catch((err) =>
-          console.error('[payment] confirmAppointment failed:', err.message)
-        );
-
-        mq.publish('payment.succeeded', {
-          paymentId:     payment._id,
-          appointmentId: payment.appointmentId,
-          patientId:     payment.patientId,
-          doctorId:      payment.doctorId,
-          amount:        payment.amount,
-          currency:      payment.currency,
-        });
-      }
-    } catch (err) {
-      console.error('[payment] webhook succeeded handler:', err.message);
-    }
+    await handlePaymentSuccess(intent.id, intent.latest_charge);
   } else if (event.type === 'payment_intent.payment_failed') {
     try {
       const payment = await Payment.findOneAndUpdate(
@@ -112,6 +88,77 @@ exports.webhook = async (req, res) => {
   // Always return 200 so Stripe stops retrying
   res.json({ received: true });
 };
+
+/**
+ * Shared logic for successful payment processing.
+ * Can be called by Webhook OR Manual Confirm endpoint.
+ */
+async function handlePaymentSuccess(stripeIntentId, chargeId = null) {
+  try {
+    const payment = await Payment.findOneAndUpdate(
+      { stripePaymentIntentId: stripeIntentId },
+      {
+        status:        'succeeded',
+        stripeChargeId: chargeId || null,
+      },
+      { new: true }
+    );
+
+    if (!payment || payment.status !== 'succeeded') return;
+
+    // 1. Confirm appointment status (async)
+    confirmAppointment(payment.appointmentId, payment._id.toString()).catch((err) =>
+      console.error('[payment] confirmAppointment failed:', err.message)
+    );
+
+    // 2. Fetch enrichment details for notifications (best-effort)
+    const [appt, patient, doctor] = await Promise.all([
+      getAppointment(payment.appointmentId),
+      getPatient(payment.patientId),
+      getDoctor(payment.doctorId),
+    ]);
+
+    const [patientAuth, doctorAuth] = await Promise.all([
+      getUser(patient?.authUserId),
+      getUser(doctor?.authUserId),
+    ]);
+
+    // 3. Publish enriched message
+    const payload = {
+      paymentId:     payment._id,
+      appointmentId: payment.appointmentId,
+      patientId:     payment.patientId,
+      doctorId:      payment.doctorId,
+      amount:        payment.amount,
+      currency:      payment.currency,
+      patientName:   patient?.firstName ? `${patient.firstName} ${patient.lastName}` : (appt?.patientName || 'Patient'),
+      patientEmail:  patientAuth?.email || '',
+      patientPhone:  patient?.phone || '',
+      doctorName:    doctor?.firstName ? `${doctor.firstName} ${doctor.lastName}` : (appt?.doctorName || 'Doctor'),
+      doctorEmail:   doctorAuth?.email || '',
+      doctorPhone:   doctor?.phone || '',
+      slotDate:      appt?.slotDate || '',
+      slotTime:      appt?.slotTime || '',
+      type:          appt?.consultationType || 'video',
+    };
+    
+    console.log('[payment] Enriched Notification Payload Dump:', JSON.stringify({
+      dbPayment: payment,
+      resolvedPatient: patient,
+      resolvedDoctor: doctor,
+      resolvedPatientAuth: patientAuth,
+      resolvedDoctorAuth: doctorAuth,
+      finalPayload: payload
+    }, null, 2));
+
+    mq.publish('payment.succeeded', payload);
+
+    console.log(`[payment] Processed success for intent: ${stripeIntentId}`);
+  } catch (err) {
+    console.error(`[payment] handlePaymentSuccess error:`, err.message);
+    throw err;
+  }
+}
 
 // ── GET /payments/:appointmentId ─────────────────────────────
 exports.getByAppointment = async (req, res) => {
@@ -184,6 +231,37 @@ exports.refund = async (req, res) => {
     return ok(res, { refunded: true, id: payment._id, refundedAt: payment.refundedAt });
   } catch (err) {
     console.error('[payment] refund:', err.message);
+    return fail(res, err.message || 'Internal server error', 500);
+  }
+};
+
+// ── POST /payments/:id/confirm ───────────────────────────────
+exports.confirmPayment = async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id);
+    if (!payment) return fail(res, 'Payment not found', 404);
+
+    if (payment.status === 'succeeded') {
+      return ok(res, { status: 'succeeded', message: 'Already processed' });
+    }
+
+    // Sync appointmentId if the frontend provides it (since it was 'pending')
+    if (req.body.appointmentId && payment.appointmentId === 'pending') {
+      payment.appointmentId = req.body.appointmentId;
+      await payment.save();
+    }
+
+    // Re-verify with Stripe source of truth
+    const intent = await stripe.paymentIntents.retrieve(payment.stripePaymentIntentId);
+
+    if (intent.status === 'succeeded') {
+      await handlePaymentSuccess(intent.id, intent.latest_charge);
+      return ok(res, { status: 'succeeded', message: 'Payment confirmed and booking processed' });
+    }
+
+    return ok(res, { status: intent.status, message: `Payment is currently ${intent.status}` });
+  } catch (err) {
+    console.error('[payment] confirmPayment:', err.message);
     return fail(res, err.message || 'Internal server error', 500);
   }
 };

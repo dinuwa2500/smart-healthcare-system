@@ -180,3 +180,26 @@ exports.updateStatus = async (req, res) => {
     return fail(res, 'Internal server error', 500);
   }
 };
+
+// ── GET /auth/users/:id  (Internal or Admin) ─────────────────
+exports.getById = async (req, res) => {
+  const internalSecret = req.headers['x-internal-secret'];
+  const FALLBACK_SECRET = 'mediconnect_secret_2024';
+
+  const isInternal = internalSecret && (internalSecret === process.env.INTERNAL_SERVICE_SECRET || internalSecret === FALLBACK_SECRET);
+  const isAdmin = req.headers['x-user-role'] === 'admin';
+
+  if (!isInternal && !isAdmin) {
+    return res.status(401).json({ success: false, error: 'Unauthorised' });
+  }
+
+  try {
+    const user = await User.findById(req.params.id).select('-passwordHash');
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+
+    return res.json({ success: true, data: { id: user._id, email: user.email, role: user.role, isActive: user.isActive } });
+  } catch (err) {
+    console.error('[auth] getById:', err.message);
+    return res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+};

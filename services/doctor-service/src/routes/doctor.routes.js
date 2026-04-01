@@ -17,7 +17,9 @@ router.get(
   ctrl.search
 );
 
-// (Moved dynamic routes to bottom to avoid collisions)
+// (Moved from bottom to keep public)
+router.get('/:id', [param('id').isMongoId()], ctrl.getById);
+router.get('/:id/slots', [param('id').isMongoId()], ctrl.getSlots);
 
 // ── All routes below require authenticated user ───────────────
 router.use(extractUser);
@@ -97,8 +99,5 @@ router.patch(
   ctrl.verifyDoctor
 );
 
-// ── Search & Public Detail (At bottom to avoid keyword collision) ──
-router.get('/:id', [param('id').isMongoId()], ctrl.getById);
-router.get('/:id/slots', [param('id').isMongoId()], ctrl.getSlots);
 
 module.exports = router;

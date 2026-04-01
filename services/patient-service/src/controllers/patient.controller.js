@@ -76,7 +76,19 @@ exports.updateMe = async (req, res) => {
 // ── GET /patients/:id  (doctor | admin) ──────────────────────
 exports.getById = async (req, res) => {
   try {
-    const profile = await PatientProfile.findById(req.params.id);
+    const { id } = req.params;
+    let profile = null;
+
+    // 1. Try by profile _id (must be a valid 24-char hex string)
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      profile = await PatientProfile.findById(id);
+    }
+
+    // 2. Try by authUserId (fallback for cross-service calls using Auth ID)
+    if (!profile) {
+      profile = await PatientProfile.findOne({ authUserId: id });
+    }
+
     if (!profile) return fail(res, 'Patient not found', 404);
     return ok(res, profile);
   } catch (err) {
