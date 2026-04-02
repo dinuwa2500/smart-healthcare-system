@@ -53,4 +53,7 @@ export const doctorApi = {
 
   getMe: () =>
     api.get<{ success: boolean; data: DoctorProfile }>('/doctors/me'),
+
+  generateSlots: () =>
+    api.post<{ success: boolean; data: { message: string; count: number } }>('/doctors/me/slots/generate'),
 };

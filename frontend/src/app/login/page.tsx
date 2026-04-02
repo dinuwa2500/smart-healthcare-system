@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useAuthStore } from '@/src/shared/store/authStore';
 import { Button } from '@/src/shared/ui/Button';
 import { Input } from '@/src/shared/ui/Input';
+import { getErrorMessage } from '@/src/shared/lib/getErrorMessage';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function LoginPage() {
       const role = useAuthStore.getState().role;
       router.replace(`/${role}/dashboard`);
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Login failed');
+      toast.error(getErrorMessage(err));
     }
   };
 

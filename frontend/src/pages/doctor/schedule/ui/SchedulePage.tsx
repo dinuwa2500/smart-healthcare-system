@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { CalendarDays, Clock, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { doctorApi } from '@/src/entities/doctor/api';
 import { Button } from '@/src/shared/ui/Button';
@@ -19,6 +20,21 @@ for (let h = 8; h < 18; h++) {
 // Grid state: day index (0-6) × slot index (0-19) = boolean
 type Grid = boolean[][];
 const emptyGrid = (): Grid => Array.from({ length: 7 }, () => Array(SLOTS.length).fill(false));
+
+function SummaryCard({ label, value, helper, icon }: { label: string; value: string; helper: string; icon: React.ReactNode }) {
+  return (
+    <div className="rounded-[26px] border border-white/70 bg-white/90 p-5 shadow-sm backdrop-blur">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{label}</p>
+          <p className="mt-3 text-3xl font-bold text-slate-900">{value}</p>
+          <p className="mt-2 text-sm text-slate-500">{helper}</p>
+        </div>
+        <div className="rounded-2xl bg-slate-100 p-3 text-slate-700">{icon}</div>
+      </div>
+    </div>
+  );
+}
 
 export function SchedulePage() {
   const [grid,    setGrid]    = useState<Grid>(emptyGrid());
@@ -53,6 +69,14 @@ export function SchedulePage() {
     });
   };
 
+  const setWeekdays = () => {
+    setGrid((prev) => prev.map((row, index) => row.map(() => index < 5)));
+  };
+
+  const clearAll = () => {
+    setGrid(emptyGrid());
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -77,41 +101,65 @@ export function SchedulePage() {
   };
 
   const totalActive = grid.flat().filter(Boolean).length;
+  const activeDays = grid.filter((row) => row.some(Boolean)).length;
+  const weeklyHours = (totalActive * 0.5).toFixed(totalActive % 2 === 0 ? 0 : 1);
 
   if (loading) return <div className="flex h-64 items-center justify-center"><Spinner /></div>;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Weekly Schedule</h1>
-          <p className="text-sm text-gray-500 mt-1">{totalActive} active slot{totalActive !== 1 ? 's' : ''} · click to toggle</p>
+    <div className="mx-auto max-w-6xl space-y-8">
+      <div className="rounded-[32px] border border-white/70 bg-white/85 p-6 shadow-sm backdrop-blur">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700">
+              Weekly availability
+            </span>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Set a predictable consultation schedule that patients can trust.</h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">Toggle individual time blocks, enable or disable entire days, and save a clean weekly availability pattern.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="ghost" onClick={setWeekdays} className="rounded-2xl px-4 py-2">
+              Weekdays only
+            </Button>
+            <Button variant="secondary" onClick={clearAll} className="rounded-2xl px-4 py-2">
+              Clear all
+            </Button>
+            <Button isLoading={saving} onClick={handleSave} className="rounded-2xl px-5 py-2.5">
+              Save Schedule
+            </Button>
+          </div>
         </div>
-        <Button isLoading={saving} onClick={handleSave}>Save Schedule</Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <SummaryCard label="Active slots" value={String(totalActive)} helper="30-minute appointments enabled" icon={<CalendarDays className="h-5 w-5" />} />
+        <SummaryCard label="Active days" value={String(activeDays)} helper="Days with at least one available slot" icon={<Clock className="h-5 w-5" />} />
+        <SummaryCard label="Weekly hours" value={`${weeklyHours}h`} helper="Approximate open consultation time" icon={<Sparkles className="h-5 w-5" />} />
       </div>
 
       {/* Legend */}
-      <div className="mb-4 flex items-center gap-4 text-xs text-gray-500">
+      <div className="flex flex-wrap items-center gap-4 rounded-[24px] border border-white/70 bg-white/80 px-4 py-3 text-xs text-slate-500 shadow-sm backdrop-blur">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3.5 w-3.5 rounded-sm bg-teal-500" /> Active
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3.5 w-3.5 rounded-sm bg-gray-200 border border-gray-300" /> Inactive
+          <span className="inline-block h-3.5 w-3.5 rounded-sm border border-gray-300 bg-gray-200" /> Inactive
         </span>
+        <span className="text-slate-400">Click a day label to toggle the full column.</span>
       </div>
 
       {/* Grid */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-        <table className="w-full text-xs">
+      <div className="overflow-x-auto rounded-[32px] border border-white/70 bg-white/90 shadow-sm backdrop-blur">
+        <table className="w-full min-w-[760px] text-xs">
           <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b border-slate-100">
               {/* Time header */}
-              <th className="w-16 p-3 text-left text-gray-400 font-normal">Time</th>
+              <th className="w-16 p-3 text-left font-normal text-slate-400">Time</th>
               {DAYS.map((day, i) => (
                 <th key={day} className="p-2 text-center">
                   <button
                     onClick={() => toggleDay(i)}
-                    className="font-semibold text-gray-700 hover:text-teal-600 transition-colors"
+                    className="rounded-xl px-3 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-teal-600"
                     title={`Toggle all ${day}`}
                   >
                     {DAY_SHORT[i]}
@@ -125,13 +173,13 @@ export function SchedulePage() {
               <tr
                 key={time}
                 className={cn(
-                  'border-b border-gray-50 last:border-0',
-                  time.endsWith(':00') ? 'border-gray-100' : ''
+                  'border-b border-slate-50 last:border-0',
+                  time.endsWith(':00') ? 'border-slate-100' : ''
                 )}
               >
                 <td className={cn(
-                  'px-3 py-1 text-gray-400 select-none',
-                  time.endsWith(':00') ? 'font-medium text-gray-500' : 'pl-5 text-[11px]'
+                  'select-none px-3 py-1 text-slate-400',
+                  time.endsWith(':00') ? 'font-medium text-slate-500' : 'pl-5 text-[11px]'
                 )}>
                   {time}
                 </td>
@@ -143,10 +191,10 @@ export function SchedulePage() {
                         onClick={() => toggle(dayIdx, slotIdx)}
                         title={`${DAYS[dayIdx]} ${time}`}
                         className={cn(
-                          'h-6 w-full rounded transition-colors',
+                          'h-6 w-full rounded transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200',
                           active
                             ? 'bg-teal-500 hover:bg-teal-600'
-                            : 'bg-gray-100 hover:bg-teal-100 border border-gray-200'
+                            : 'border border-gray-200 bg-gray-100 hover:bg-teal-100'
                         )}
                       />
                     </td>

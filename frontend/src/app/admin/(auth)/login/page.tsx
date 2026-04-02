@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useAuthStore } from '@/src/shared/store/authStore';
 import { Button } from '@/src/shared/ui/Button';
 import { Input } from '@/src/shared/ui/Input';
+import { getErrorMessage } from '@/src/shared/lib/getErrorMessage';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -31,10 +32,7 @@ export default function AdminLoginPage() {
       toast.success('Welcome, Admin!');
       router.replace('/admin/dashboard');
     } catch (err: unknown) {
-      const message = err instanceof Error 
-        ? (err as { response?: { data?: { error?: string } } }).response?.data?.error || err.message 
-        : 'Login failed';
-      toast.error(message);
+      toast.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

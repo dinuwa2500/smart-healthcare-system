@@ -21,9 +21,10 @@ const TABS = [
 ];
 
 function canJoin(appointment: Appointment): boolean {
-  if (appointment.status !== 'confirmed') return false;
-  const slotMs = new Date(`${appointment.slotDate}T${appointment.slotTime}`).getTime();
-  return Date.now() >= slotMs - 10 * 60 * 1000;
+  // if (appointment.status !== 'confirmed') return false;
+  // const slotMs = new Date(`${appointment.slotDate}T${appointment.slotTime}`).getTime();
+  // return Date.now() >= slotMs - 10 * 60 * 1000;
+   return appointment.status === 'confirmed';
 }
 
 function canCancel(appointment: Appointment): boolean {

@@ -2,10 +2,10 @@ import api from '../../shared/api';
 import type { Payment } from './model';
 
 export const paymentApi = {
-  createIntent: (data: { appointmentId: string; amount: number; currency?: string }) =>
+  createIntent: (data: { appointmentId: string; amount: number; patientId: string; doctorId: string; currency?: string }) =>
     api.post<{ success: boolean; data: { clientSecret: string; paymentId: string } }>(
       '/payments/create-intent',
-      data
+      { ...data, amountLKR: data.amount }
     ),
 
   getByAppointment: (appointmentId: string) =>
@@ -13,6 +13,9 @@ export const paymentApi = {
 
   refund: (id: string) =>
     api.post<{ success: boolean; data: Payment }>(`/payments/${id}/refund`),
+
+  confirm: (id: string, appointmentId?: string) =>
+    api.post<{ success: boolean; data: { status: string; message: string } }>(`/payments/${id}/confirm`, { appointmentId }),
 
   // ── Admin ────────────────────────────────────────────────
   getAll: (params?: { status?: string; from?: string; to?: string; page?: number; limit?: number }) =>

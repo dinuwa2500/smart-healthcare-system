@@ -6,10 +6,18 @@ import toast from 'react-hot-toast';
 import api from '@/src/shared/api';
 import { Button } from '@/src/shared/ui/Button';
 import { Input } from '@/src/shared/ui/Input';
+import { getErrorMessage } from '@/src/shared/lib/getErrorMessage';
 
 export default function AdminRegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: '', password: '', confirmPassword: '', adminCode: '' });
+  const [form, setForm] = useState({ 
+    firstName: '', 
+    lastName: '', 
+    email: '', 
+    password: '', 
+    confirmPassword: '', 
+    adminCode: '' 
+  });
   const [loading, setLoading] = useState(false);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -32,23 +40,27 @@ export default function AdminRegisterPage() {
     try {
       const res = await api.post<{ success: boolean; data: { userId: string; email: string; role: string } }>(
         '/auth/register', 
-        { email: form.email, password: form.password, role: 'admin', adminCode: form.adminCode }
+        { 
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email, 
+          password: form.password, 
+          role: 'admin', 
+          adminCode: form.adminCode 
+        }
       );
       
       toast.success('Admin account created successfully. Please login.');
       router.replace('/admin/login');
     } catch (err: unknown) {
-      const message = err instanceof Error 
-        ? (err as { response?: { data?: { error?: string } } }).response?.data?.error || err.message 
-        : 'Registration failed';
-      toast.error(message);
+      toast.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4 py-12">
       <div className="w-full max-w-md rounded-2xl bg-gray-800 p-8 shadow-xl">
         <div className="mb-8 flex flex-col items-center gap-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500">
@@ -69,6 +81,28 @@ export default function AdminRegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              id="firstName"
+              label="First Name"
+              placeholder="John"
+              value={form.firstName}
+              onChange={set('firstName')}
+              required
+              labelClassName="text-gray-200"
+              className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+            />
+            <Input
+              id="lastName"
+              label="Last Name"
+              placeholder="Doe"
+              value={form.lastName}
+              onChange={set('lastName')}
+              required
+              labelClassName="text-gray-200"
+              className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+            />
+          </div>
           <Input
             id="email"
             label="Email"

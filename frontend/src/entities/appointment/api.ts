@@ -4,6 +4,10 @@ import type { Appointment } from './model';
 export const appointmentApi = {
   book: (data: {
     doctorId: string;
+    doctorName?: string;
+    doctorSpecialty?: string;
+    consultationFee?: number;
+    patientName?: string;
     slotDate: string;
     slotTime: string;
     consultationType: 'video' | 'in_person';
@@ -30,14 +34,15 @@ export const appointmentApi = {
     api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/today'),
 
   getDoctorPending: () =>
-    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/pending'),
+    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/all?status=pending'),
 
   getDoctorUpcoming: () =>
-    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/upcoming'),
+    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/all?status=confirmed'),
 
   getDoctorHistory: () =>
-    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/history'),
+    // We fetch all other statuses and filter on the frontend if needed, or omit status
+    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/all'),
 
   getDoctorWeek: () =>
-    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/week'),
+    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/all'),
 };

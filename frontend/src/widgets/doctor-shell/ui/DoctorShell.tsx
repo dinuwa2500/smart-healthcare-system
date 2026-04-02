@@ -2,22 +2,20 @@
 import { useState, type ElementType, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { CalendarDays, FileUp, HeartPulse, LayoutDashboard, LogOut, Menu, Search, Sparkles, Stethoscope, Video, X } from 'lucide-react';
+import { CalendarDays, Clock, FileText, LayoutDashboard, LogOut, Menu, Stethoscope, Video, X } from 'lucide-react';
 import { useAuthStore } from '@/src/shared/store/authStore';
 import { cn } from '@/src/shared/lib/cn';
 
 const NAV_ITEMS = [
-  { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/patient/find-doctors', label: 'Find Doctors', icon: Search },
-  { href: '/patient/my-appointments', label: 'Appointments', icon: CalendarDays },
-  { href: '/patient/book-appointment', label: 'Book Visit', icon: HeartPulse },
-  { href: '/patient/upload-report', label: 'Reports', icon: FileUp },
-  { href: '/patient/symptom-check', label: 'Symptom Check', icon: Stethoscope },
+  { href: '/doctor/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/doctor/appointments', label: 'Appointments', icon: CalendarDays },
+  { href: '/doctor/patient-records', label: 'Patient Records', icon: FileText },
+  { href: '/doctor/schedule', label: 'Schedule', icon: Clock },
 ];
 
 function NavLink({ href, label, icon: Icon, onClick }: { href: string; label: string; icon: ElementType; onClick?: () => void }) {
   const pathname = usePathname();
-  const active = pathname === href || (href !== '/patient/dashboard' && pathname.startsWith(href));
+  const active = pathname === href || (href !== '/doctor/dashboard' && pathname.startsWith(href));
 
   return (
     <Link
@@ -26,7 +24,7 @@ function NavLink({ href, label, icon: Icon, onClick }: { href: string; label: st
       className={cn(
         'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all',
         active
-          ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20'
+          ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
           : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
       )}
     >
@@ -38,7 +36,6 @@ function NavLink({ href, label, icon: Icon, onClick }: { href: string; label: st
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter();
-  const pathname = usePathname();
   const { logout, user } = useAuthStore();
 
   const handleLogout = () => {
@@ -50,12 +47,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex h-full flex-col bg-slate-950 text-white">
       <div className="border-b border-white/10 px-5 py-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-500 shadow-lg shadow-teal-500/20">
-            <HeartPulse className="h-6 w-6" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500 shadow-lg shadow-cyan-500/20">
+            <Stethoscope className="h-6 w-6 text-slate-950" />
           </div>
           <div>
             <p className="text-sm font-semibold text-white">MediConnect</p>
-            <p className="text-xs text-slate-400">Patient Care Hub</p>
+            <p className="text-xs text-slate-400">Doctor Workspace</p>
           </div>
         </div>
       </div>
@@ -63,8 +60,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="px-4 py-5">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Signed in as</p>
-          <p className="mt-2 truncate text-sm font-semibold text-white">{user?.name || user?.email || 'Patient'}</p>
-          <p className="mt-1 text-xs text-slate-400">Manage care, reports, and appointments in one place.</p>
+          <p className="mt-2 truncate text-sm font-semibold text-white">{user?.name || user?.email || 'Doctor'}</p>
+          <p className="mt-1 text-xs text-slate-400">Review appointments, manage follow-ups, and keep your day on track.</p>
         </div>
       </div>
 
@@ -75,19 +72,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="px-4 pb-4">
-        {!pathname.startsWith('/patient/video-session') && (
-          <div className="mb-4 rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/20 to-cyan-500/10 p-4">
-            <div className="flex items-start gap-3">
-              <div className="rounded-xl bg-white/10 p-2">
-                <Sparkles className="h-4 w-4 text-teal-200" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Care tip</p>
-                <p className="mt-1 text-xs leading-5 text-slate-300">Keep reports and recent symptoms updated before each consultation for a smoother visit.</p>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="mb-4 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/20 to-sky-500/10 p-4">
+          <p className="text-sm font-semibold text-white">Today’s focus</p>
+          <p className="mt-1 text-xs leading-5 text-slate-300">Keep video consultations, pending reviews, and prescriptions in a single workflow.</p>
+        </div>
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
@@ -100,11 +88,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function PatientShell({ children }: { children: ReactNode }) {
+export function DoctorShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  if (pathname.startsWith('/patient/video-session')) {
+  if (pathname.startsWith('/doctor/video-session')) {
     return <>{children}</>;
   }
 
@@ -117,7 +105,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
       <button
         onClick={() => setOpen(true)}
         className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg lg:hidden"
-        aria-label="Open patient navigation"
+        aria-label="Open doctor navigation"
       >
         <Menu className="h-5 w-5" />
       </button>
@@ -130,7 +118,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
             <button
               onClick={() => setOpen(false)}
               className="absolute right-4 top-4 rounded-xl bg-white/10 p-2 text-white"
-              aria-label="Close patient navigation"
+              aria-label="Close doctor navigation"
             >
               <X className="h-4 w-4" />
             </button>
@@ -139,7 +127,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
       )}
 
       <main className="min-h-screen lg:pl-72">
-        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.14),_transparent_30%),linear-gradient(to_bottom,_#f8fafc,_#eef2ff_45%,_#f8fafc)] px-4 pb-10 pt-20 sm:px-6 lg:px-8 lg:pt-8">
+        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.14),_transparent_32%),linear-gradient(to_bottom,_#f8fafc,_#eef2ff_45%,_#f8fafc)] px-4 pb-10 pt-20 sm:px-6 lg:px-8 lg:pt-8">
           {children}
         </div>
       </main>
