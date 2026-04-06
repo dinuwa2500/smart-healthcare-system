@@ -32,9 +32,9 @@ router.post(
   ctrl.confirmPayment
 );
 
-// GET /payments/admin/all  (admin)
+// GET /payments (admin listing)
 router.get(
-  '/admin/all',
+  '/',
   extractUser,
   roleGuard('admin'),
   ctrl.adminAll

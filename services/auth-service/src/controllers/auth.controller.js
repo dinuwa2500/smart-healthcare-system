@@ -203,3 +203,34 @@ exports.getById = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Internal server error' });
   }
 };
+
+// ── GET /auth/users (Admin Only) ──────────────────────────────
+exports.getAll = async (req, res) => {
+  try {
+    const { page = 1, limit = 100 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [users, total] = await Promise.all([
+      User.find()
+        .select('-passwordHash')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      User.countDocuments()
+    ]);
+
+    // Format for frontend
+    const formatted = users.map(u => ({
+      id: u._id,
+      email: u.email,
+      role: u.role,
+      isActive: u.isActive,
+      createdAt: u.createdAt
+    }));
+
+    return ok(res, { users: formatted, total });
+  } catch (err) {
+    console.error('[auth] getAll:', err.message);
+    return fail(res, 'Internal server error', 500);
+  }
+};

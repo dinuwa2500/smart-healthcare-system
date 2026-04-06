@@ -1,0 +1,29 @@
+# Ignore all node_modules across every service
+**/node_modules
+**/.next
+**/.git
+**/.gitignore
+
+# Logs
+**/npm-debug.log*
+**/*.log
+
+# Environment files (injected via docker-compose env_file)
+**/.env
+**/.env.local
+**/.env*.local
+
+# OS junk
+**/.DS_Store
+**/Thumbs.db
+
+# Test / coverage
+**/coverage
+**/__tests__
+**/*.test.js
+**/*.spec.js
+
+# Frontend build artifacts
+frontend/.next
+frontend/out
+frontend/build

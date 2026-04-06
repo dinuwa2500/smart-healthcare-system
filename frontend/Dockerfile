@@ -19,7 +19,7 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_STRIPE_PUBLIC_KEY=$NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 ENV NEXT_PUBLIC_AGORA_APP_ID=$NEXT_PUBLIC_AGORA_APP_ID
 
-RUN npx next build --no-lint
+RUN npx next build
 
 # ── Stage 3: production runner ───────────────────────────────
 FROM node:20-alpine AS production

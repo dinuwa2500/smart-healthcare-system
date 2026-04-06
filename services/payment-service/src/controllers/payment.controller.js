@@ -184,17 +184,31 @@ exports.getByAppointment = async (req, res) => {
   }
 };
 
-// ── GET /payments/admin/all  (role:admin, paginated) ─────────
+// ── GET /payments/admin/all (role:admin, paginated) ──────────
 exports.adminAll = async (req, res) => {
   try {
-    const { page = 1, limit = 20, status } = req.query;
+    const { page = 1, limit = 100, status, from, to } = req.query;
     const filter = {};
+    
     if (status) filter.status = status;
+    
+    if (from || to) {
+      filter.createdAt = {};
+      if (from) filter.createdAt.$gte = new Date(from);
+      if (to) {
+        const toDate = new Date(to);
+        toDate.setHours(23, 59, 59, 999); // End of the day
+        filter.createdAt.$lte = toDate;
+      }
+    }
 
     const skip = (Number(page) - 1) * Number(limit);
     const [payments, total] = await Promise.all([
-      Payment.find(filter).select('-stripeClientSecret').sort({ createdAt: -1 })
-        .skip(skip).limit(Number(limit)),
+      Payment.find(filter)
+        .select('-stripeClientSecret')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
       Payment.countDocuments(filter),
     ]);
 

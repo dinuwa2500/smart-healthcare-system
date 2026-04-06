@@ -55,4 +55,11 @@ router.get(
   ctrl.getById
 );
 
+// GET /auth/users (Admin only listing)
+router.get(
+  '/users',
+  adminOnly,
+  ctrl.getAll
+);
+
 module.exports = router;
