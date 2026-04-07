@@ -9,6 +9,7 @@ export interface DoctorProfile {
   consultationFee: number;
   bio: string;
   languages: string[];
+  profilePicture?: string;
   isVerified: boolean;
   rating: { average: number; count: number };
   createdAt: string;
