@@ -7,7 +7,7 @@ const { extractUser, roleGuard } = require('../middleware/verifyAccess');
 
 const router = Router();
 
-// ── PUBLIC routes (no auth required) ────────────────────────
+// ── 1. PUBLIC Literal Routes (No Auth) ─────────────────────────
 router.get(
   '/',
   [
@@ -17,26 +17,30 @@ router.get(
   ctrl.search
 );
 
-// (Moved from bottom to keep public)
-router.get('/:id', [param('id').isMongoId()], ctrl.getById);
-router.get('/:id/slots', [param('id').isMongoId()], ctrl.getSlots);
+// ── 2. PROTECTED Literal Routes (Authenticated) ───────────────
+// These MUST be defined BEFORE parameterized routes (/:id) to avoid matching 'me' as an id.
+router.get('/me',              extractUser, roleGuard('doctor'), ctrl.getMe);
+router.post('/me/slots/generate', extractUser, roleGuard('doctor'), ctrl.generateDefaultSlots);
+router.get('/me/prescriptions', extractUser, roleGuard('doctor'), ctrl.myPrescriptions);
+router.get('/me/patients',      extractUser, roleGuard('doctor'), ctrl.myPatients);
 
-// ── All routes below require authenticated user ───────────────
-router.use(extractUser);
-
-// ── Doctor management (MUST be before /:id routes) ────────────
-router.get('/me', roleGuard('doctor'), ctrl.getMe);
-router.post('/me/slots/generate', roleGuard('doctor'), ctrl.generateDefaultSlots);
-
-// ── Query: prescriptions for a patient (doctor or admin) ─────
-// Must be before /:id routes to avoid matching 'prescriptions' as an id
+// Query: prescriptions for a patient (doctor or admin)
 router.get(
   '/prescriptions',
+  extractUser,
   roleGuard(['doctor', 'admin']),
   ctrl.prescriptionsByPatient
 );
 
-// ── Doctor-only routes ────────────────────────────────────────
+// ── 3. PUBLIC Parameterized Routes ─────────────────────────────
+// These catch any path that wasn't matched by specific literal routes above.
+router.get('/:id', [param('id').isMongoId()], ctrl.getById);
+router.get('/:id/slots', [param('id').isMongoId()], ctrl.getSlots);
+
+// ── 4. DOCTOR-ONLY Managed Routes ──────────────────────────────
+// Apply extractUser to all routes below.
+router.use(extractUser);
+
 router.post(
   '/register',
   roleGuard('doctor'),
@@ -88,10 +92,7 @@ router.post(
   ctrl.issuePrescription
 );
 
-router.get('/me/prescriptions', roleGuard('doctor'), ctrl.myPrescriptions);
-router.get('/me/patients',      roleGuard('doctor'), ctrl.myPatients);
-
-// ── Admin-only routes ─────────────────────────────────────────
+// ── 5. ADMIN-ONLY Routes ───────────────────────────────────────
 router.patch(
   '/:id/verify',
   roleGuard('admin'),

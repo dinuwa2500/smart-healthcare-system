@@ -16,7 +16,7 @@ const PORT = process.env.PATIENT_SERVICE_PORT || 4001;
 
 // ── Global middleware ────────────────────────────────────────
 app.use(helmet());
-app.use(cors());
+// app.use(cors()); // Handled by API Gateway
 app.use(morgan('dev'));
 app.use(express.json());
 

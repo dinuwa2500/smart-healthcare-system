@@ -48,6 +48,7 @@ const doctorProfileSchema = new mongoose.Schema(
     consultationFee: { type: Number, min: 0 },
     bio:             { type: String, trim: true },
     languages:       { type: [String], default: [] },
+    profilePicture:  { type: String, trim: true }, // URL to profile image
     isVerified:      { type: Boolean, default: false },
     rating:          { type: ratingSchema, default: () => ({ average: 0, count: 0 }) },
   },

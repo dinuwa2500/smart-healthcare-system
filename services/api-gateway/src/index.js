@@ -13,7 +13,7 @@ const PORT = process.env.API_GATEWAY_PORT || 3000;
 
 app.use(helmet());
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3001';
-app.use(cors({ credentials: true, origin: CLIENT_ORIGIN }));
+app.use(cors({ credentials: true, origin: true })); // Reflect origin for reliability with credentials
 app.use(morgan('combined'));
 
 // ── Health check ────────────────────────────────────────────
