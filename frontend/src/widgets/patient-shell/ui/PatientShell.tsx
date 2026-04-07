@@ -2,7 +2,7 @@
 import { useState, type ElementType, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { CalendarDays, FileUp, HeartPulse, LayoutDashboard, LogOut, Menu, Search, Sparkles, Stethoscope, Video, X } from 'lucide-react';
+import { CalendarDays, FileUp, HeartPulse, LayoutDashboard, LogOut, Menu, Search, Sparkles, Stethoscope, User as UserIcon, Video, X } from 'lucide-react';
 import { useAuthStore } from '@/src/shared/store/authStore';
 import { cn } from '@/src/shared/lib/cn';
 
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/patient/book-appointment', label: 'Book Visit', icon: HeartPulse },
   { href: '/patient/upload-report', label: 'Reports', icon: FileUp },
   { href: '/patient/symptom-check', label: 'Symptom Check', icon: Stethoscope },
+  { href: '/patient/settings', label: 'Profile Settings', icon: UserIcon },
 ];
 
 function NavLink({ href, label, icon: Icon, onClick }: { href: string; label: string; icon: ElementType; onClick?: () => void }) {
