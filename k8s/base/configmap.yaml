@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediconnect-config
+data:
+  NODE_ENV: "production"
+  MAIL_DRIVER: "smtp"
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "587"
+  SMTP_SECURE: "false"
+  MAIL_FROM: "dinuwaperera123@gmail.com"
+  # Service URLs for internal container-to-container calls
+  PATIENT_SERVICE_URL: "http://patient-service:4001"
+  DOCTOR_SERVICE_URL: "http://doctor-service:4002"
+  APPOINTMENT_SERVICE_URL: "http://appointment-service:4003"
+  RABBITMQ_URL: "amqp://guest:guest@rabbitmq-service:5672"
+  NEXT_PUBLIC_API_URL: "http://mediconnect.local/api"
+  NEXT_PUBLIC_STRIPE_PUBLIC_KEY: "pk_test_51TELjBDO2IzKL0HDjfAMs3k0LlRJWCRdVD220d0UUXFY8mxBDl06t8pZ6GAbyGUX3rwKsXAOWwR8TO3DPHKxMnyD00jaaCJ3qN"
+  NEXT_PUBLIC_AGORA_APP_ID: "ba69b6c1dff645af975610d607c25851"

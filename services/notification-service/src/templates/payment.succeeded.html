@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Payment Received</title></head>
+<body style="font-family:Arial,sans-serif;background:#f4f6f8;padding:24px">
+  <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;padding:32px;box-shadow:0 10px 25px rgba(0,0,0,.05);border:1px solid #e2e8f0">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="display:inline-block;background:#F0FDF4;padding:12px;border-radius:50%;margin-bottom:16px">
+        <h2 style="color:#16A34A;margin:0;font-size:32px">✓</h2>
+      </div>
+      <h2 style="color:#0F172A;margin:0;letter-spacing:-0.025em">Booking Confirmed!</h2>
+      <p style="color:#64748b;font-size:14px;margin-top:8px">Hello {patientName}, your appointment is now secured.</p>
+    </div>
+
+    <div style="background:#f8fafc;border-radius:16px;padding:24px;margin-bottom:24px">
+      <h3 style="color:#0F172A;margin-top:0;font-size:16px;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700">Appointment Details</h3>
+      <table style="width:100%;border-collapse:collapse">
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px">Doctor</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#0F172A">Dr. {doctorName}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px">Date</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#0F172A">{slotDate}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px">Time</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#0F172A">{slotTime}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px">Type</td><td style="padding:8px 0;text-align:right"><span style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">{consultationType}</span></td></tr>
+      </table>
+    </div>
+
+    <div style="border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:24px">
+      <div style="display:flex;justify-content:between;align-items:center">
+        <span style="color:#64748b;font-size:14px">Amount Paid</span>
+        <span style="margin-left:auto;color:#16A34A;font-weight:800;font-size:20px">{amount}</span>
+      </div>
+      <div style="margin-top:12px;color:#94a3b8;font-size:11px;font-family:monospace;text-align:center">
+        Ref: {paymentId} · Appt: {appointmentId}
+      </div>
+    </div>
+
+    <div style="background:#FFFBEB;border-left:4px solid #F59E0B;padding:16px;border-radius:4px;margin-bottom:24px">
+      <p style="margin:0;font-size:13px;color:#92400E;line-height:1.5">
+        <strong>Note:</strong> If this is a video consultation, please join 5 minutes early via the link in your patient dashboard.
+      </p>
+    </div>
+    
+    <hr style="border:none;border-top:1px solid #E2E8F0;margin:24px 0">
+    <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0">MediConnect Healthcare Platform © 2024</p>
+  </div>
+</body>
+</html>
