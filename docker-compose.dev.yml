@@ -1,0 +1,98 @@
+version: '3.9'
+
+# Development overrides – hot-reload via volume mounts + nodemon
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  api-gateway:
+    build:
+      target: development
+    volumes:
+      - ./services/api-gateway/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  auth-service:
+    build:
+      target: development
+    volumes:
+      - ./services/auth-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  patient-service:
+    build:
+      target: development
+    volumes:
+      - ./services/patient-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  doctor-service:
+    build:
+      target: development
+    volumes:
+      - ./services/doctor-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  appointment-service:
+    build:
+      target: development
+    volumes:
+      - ./services/appointment-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  payment-service:
+    build:
+      target: development
+    volumes:
+      - ./services/payment-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  notification-service:
+    build:
+      target: development
+    volumes:
+      - ./services/notification-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  telemedicine-service:
+    build:
+      target: development
+    volumes:
+      - ./services/telemedicine-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  ai-symptom-service:
+    build:
+      target: development
+    volumes:
+      - ./services/ai-symptom-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  client:
+    build:
+      target: development
+    volumes:
+      - ./client/src:/app/src:delegated
+      - ./client/public:/app/public:delegated
+    ports:
+      - '5173:5173'
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'vite', '--host', '0.0.0.0']
