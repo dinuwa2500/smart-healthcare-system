@@ -2,7 +2,7 @@
 **/.env
 !.env.example
 !**/.env.example
-
+"@ | Out-File -Encoding utf8 .gitignore
 # ── Dependencies ─────────────────────────────────────────────
 node_modules/
 **/node_modules/
