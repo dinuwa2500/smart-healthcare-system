@@ -1,5 +1,9 @@
 # ── Environment variables (NEVER commit real secrets) ────────
-
+.env
+.env.local
+.env.*.local
+.env.example
+frontend/env.local
 
 # ── Dependencies ─────────────────────────────────────────────
 node_modules/
