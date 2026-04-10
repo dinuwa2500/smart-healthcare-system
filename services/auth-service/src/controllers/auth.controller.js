@@ -13,7 +13,7 @@ const REFRESH_EXPIRY = '7d';
 const REFRESH_COOKIE = 'refreshToken';
 const REFRESH_COOKIE_PATH = '/api/auth/refresh';
 
-// ── Token helpers ────────────────────────────────────────────
+// Token helpers 
 const signAccess = (user) =>
   jwt.sign({ sub: user._id.toString(), role: user.role }, process.env.JWT_SECRET, {
     expiresIn: ACCESS_EXPIRY,
