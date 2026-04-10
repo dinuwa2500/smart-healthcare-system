@@ -219,7 +219,7 @@ exports.getAll = async (req, res) => {
       User.countDocuments()
     ]);
 
-    // Format for frontend
+    // Format for frontends that expect id instead of _id, and to exclude sensitive fields
     const formatted = users.map(u => ({
       id: u._id,
       email: u.email,
