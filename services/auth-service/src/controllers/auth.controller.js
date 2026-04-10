@@ -152,7 +152,7 @@ exports.refresh = async (req, res) => {
   }
 };
 
-// ── POST /auth/logout 
+// ── POST /auth/logout ────────────────────────────────────────
 exports.logout = (_req, res) => {
   res.clearCookie(REFRESH_COOKIE, { path: REFRESH_COOKIE_PATH });
   return ok(res, { message: 'Logged out successfully' });
