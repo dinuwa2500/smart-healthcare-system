@@ -1,7 +1,7 @@
 # ── Stage 1: development ────────────────────────────────────
 FROM node:18-alpine AS development
 WORKDIR /app
-
+# Install dependencies
 COPY services/auth-service/package*.json ./
 RUN npm install
 
