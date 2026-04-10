@@ -17,6 +17,7 @@ CMD ["node", "src/index.js"]
 FROM node:18-alpine AS production
 WORKDIR /app
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY services/auth-service/package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
