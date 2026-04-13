@@ -34,3 +34,7 @@ Thumbs.db
 
 # ── Coverage ─────────────────────────────────────────────────
 coverage/
+
+
+#secretc
+*secrets.yaml

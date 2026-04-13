@@ -15,8 +15,9 @@ import { formatCurrency } from '@/src/shared/lib/formatCurrency';
 import { PatientPageHeader } from '@/src/widgets/patient-shell/ui/PatientPageHeader';
 
 const TABS = [
-  { label: 'Upcoming', value: 'upcoming' },
-  { label: 'Past',     value: 'past'     },
+  { label: 'Today',     value: 'today'    },
+  { label: 'Upcoming',  value: 'upcoming' },
+  { label: 'Past',      value: 'past'     },
   { label: 'Cancelled', value: 'cancelled' },
 ];
 
@@ -153,8 +154,17 @@ export function MyAppointmentsPage() {
     setUpcoming((prev) => prev.filter((a) => a._id !== id));
   };
 
-  const past      = history.filter((a) => a.status === 'completed' || a.status === 'no_show');
-  const cancelled = history.filter((a) => a.status.startsWith('cancelled'));
+  const isToday = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() &&
+           d.getMonth() === now.getMonth() &&
+           d.getDate() === now.getDate();
+  };
+
+  const todayAppointments = [...upcoming, ...history].filter(a => isToday(a.slotDate));
+  const past              = history.filter((a) => a.status === 'completed' || a.status === 'no_show');
+  const cancelled         = history.filter((a) => a.status.startsWith('cancelled'));
 
   if (loading) {
     return (
@@ -180,7 +190,14 @@ export function MyAppointmentsPage() {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-[24px] border border-white/70 bg-white/90 p-5 shadow-sm backdrop-blur">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
+            <Calendar className="h-5 w-5" />
+          </div>
+          <p className="mt-4 text-sm text-slate-500">Today</p>
+          <p className="mt-1 text-3xl font-semibold text-slate-900">{todayAppointments.length}</p>
+        </div>
         <div className="rounded-[24px] border border-white/70 bg-white/90 p-5 shadow-sm backdrop-blur">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
             <CalendarClock className="h-5 w-5" />
@@ -207,6 +224,7 @@ export function MyAppointmentsPage() {
       <Tabs tabs={TABS}>
         {(tab) => (
           <>
+            {tab === 'today'     && <AppointmentList appointments={todayAppointments} onCancel={handleCancel} />}
             {tab === 'upcoming'  && <AppointmentList appointments={upcoming}  onCancel={handleCancel} />}
             {tab === 'past'      && <AppointmentList appointments={past}      onCancel={() => {}} />}
             {tab === 'cancelled' && <AppointmentList appointments={cancelled} onCancel={() => {}} />}

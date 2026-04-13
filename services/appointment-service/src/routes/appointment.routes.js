@@ -10,7 +10,7 @@ const router = Router();
 // All appointment routes require identity
 router.use(extractUser);
 
-// ── Static sub-paths first (before /:id to avoid conflicts) ──
+
 
 // Patient routes
 router.get('/my/upcoming', roleGuard('patient'), ctrl.myUpcoming);
