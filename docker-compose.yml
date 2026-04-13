@@ -1,11 +1,10 @@
 services:
-  # ── Infrastructure ─────────────────────────────────────────
   mongodb:
     image: mongo:7
     container_name: mediconnect-mongodb
     restart: unless-stopped
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     environment:
@@ -16,8 +15,8 @@ services:
     container_name: mediconnect-rabbitmq
     restart: unless-stopped
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -32,7 +31,7 @@ services:
     container_name: mediconnect-api-gateway
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - "3000:3000"
     env_file: .env
     depends_on:
       - auth-service
@@ -52,7 +51,7 @@ services:
     container_name: mediconnect-auth-service
     restart: unless-stopped
     ports:
-      - '4100:4000'
+      - "4100:4000"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
@@ -67,7 +66,7 @@ services:
     container_name: mediconnect-patient-service
     restart: unless-stopped
     ports:
-      - '4101:4001'
+      - "4101:4001"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
@@ -82,7 +81,7 @@ services:
     container_name: mediconnect-doctor-service
     restart: unless-stopped
     ports:
-      - '4102:4002'
+      - "4102:4002"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
@@ -97,7 +96,7 @@ services:
     container_name: mediconnect-appointment-service
     restart: unless-stopped
     ports:
-      - '4103:4003'
+      - "4103:4003"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
@@ -113,7 +112,7 @@ services:
     container_name: mediconnect-payment-service
     restart: unless-stopped
     ports:
-      - '4104:4004'
+      - "4104:4004"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
@@ -129,7 +128,7 @@ services:
     container_name: mediconnect-notification-service
     restart: unless-stopped
     ports:
-      - '4105:4005'
+      - "4105:4005"
     env_file: .env
     depends_on:
       - rabbitmq
@@ -143,7 +142,7 @@ services:
     container_name: mediconnect-telemedicine-service
     restart: unless-stopped
     ports:
-      - '4106:4006'
+      - "4106:4006"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
@@ -158,7 +157,7 @@ services:
     container_name: mediconnect-ai-symptom-service
     restart: unless-stopped
     ports:
-      - '4107:4007'
+      - "4107:4007"
     env_file: .env
     environment:
       NODE_PATH: /app/node_modules
