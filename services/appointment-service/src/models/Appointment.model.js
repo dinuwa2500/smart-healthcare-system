@@ -35,7 +35,6 @@ const appointmentSchema = new mongoose.Schema(
     collection: 'appointments',
   }
 );
-
 appointmentSchema.index({ patientId: 1, status: 1 });
 appointmentSchema.index({ doctorId: 1, slotDate: 1 });
 

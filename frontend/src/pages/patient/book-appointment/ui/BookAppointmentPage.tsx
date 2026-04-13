@@ -19,7 +19,6 @@ import { PatientPageHeader } from '@/src/widgets/patient-shell/ui/PatientPageHea
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY ?? '');
 
-// ── Step indicator ────────────────────────────────────────────
 function Stepper({ step }: { step: number }) {
   const steps = ['Select Slot', 'Reason', 'Payment'];
   return (
