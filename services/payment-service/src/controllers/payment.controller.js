@@ -86,7 +86,6 @@ exports.webhook = async (req, res) => {
     }
   }
 
-  // Always return 200 so Stripe stops retrying
   res.json({ received: true });
 };
 

@@ -1,7 +1,6 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
 const paymentSchema = new mongoose.Schema(
   {
     appointmentId: { type: String, required: [true, 'appointmentId is required'] },
@@ -25,7 +24,6 @@ const paymentSchema = new mongoose.Schema(
     collection: 'payments',
   }
 );
-
 paymentSchema.index({ appointmentId: 1 });
 paymentSchema.index({ patientId: 1 });
 

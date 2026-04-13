@@ -1,7 +1,6 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
 let _db = null;
 
 async function connectDB() {
@@ -34,7 +33,6 @@ async function connectDB() {
 
   return _db;
 }
-
 function getDb() {
   if (!_db) {
     throw new Error('Database not initialised. Call connectDB() first.');
