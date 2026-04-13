@@ -4,11 +4,7 @@ const RAW_MODEL    = process.env.HF_CHAT_MODEL || 'katanemo/Arch-Router-1.5B';
 const MODEL        = RAW_MODEL.includes(':') ? RAW_MODEL : `${RAW_MODEL}:hf-inference`;
 const TIMEOUT_MS   = 30_000;
 
-/**
- * Call Zephyr-7b via HuggingFace serverless inference.
- * Rejects with a typed error on timeout or rate-limit so the
- * controller can handle each case distinctly.
- */
+
 async function callZephyr(prompt) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);

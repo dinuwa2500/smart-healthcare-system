@@ -41,8 +41,8 @@ exports.getById = async (req, res) => {
     // Only involved parties or admin may view
     if (
       req.userRole !== 'admin' &&
-      req.userId !== appt.patientId &&
-      req.userId !== appt.doctorId
+      String(req.userId) !== String(appt.patientId) &&
+      String(req.userId) !== String(appt.doctorId)
     ) {
       return fail(res, 'Forbidden', 403);
     }
@@ -63,12 +63,20 @@ exports.updateStatus = async (req, res) => {
     const appt = await Appointment.findById(req.params.id);
     if (!appt) return fail(res, 'Appointment not found', 404);
 
-    const { status: nextStatus, reason, prescriptionId } = req.body;
+    // Guard: Only the assigned doctor or an admin can update status
+    if (req.userRole !== 'admin' && String(req.userId) !== String(appt.doctorId)) {
+      console.warn(`[appointment] 403 Reject: User ${req.userId} vs Assigned Doctor ${appt.doctorId}`);
+      return fail(res, 'Forbidden: You are not assigned to this appointment', 403);
+    }
+
+    const { status: nextStatus, reason, doctorNotes, prescriptionId } = req.body;
+    const finalReason = reason || doctorNotes;
+
     const check = validateTransition(appt, nextStatus, req.userRole);
     if (!check.ok) return fail(res, check.reason, check.code);
 
     appt.status = nextStatus;
-    if (reason)         appt.doctorNotes = reason;
+    if (finalReason) appt.doctorNotes = finalReason;
     await appt.save();
 
     // Publish event

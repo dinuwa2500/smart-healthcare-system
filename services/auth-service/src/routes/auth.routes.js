@@ -43,7 +43,8 @@ router.patch(
   adminOnly,
   [
     param('id').isMongoId().withMessage('Invalid user id'),
-    body('isActive').isBoolean().withMessage('isActive must be boolean'),
+    body('isActive').optional().isBoolean().withMessage('isActive must be boolean'),
+    body('isVerified').optional().isBoolean().withMessage('isVerified must be boolean'),
   ],
   ctrl.updateStatus
 );

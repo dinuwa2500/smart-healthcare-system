@@ -164,11 +164,15 @@ exports.updateStatus = async (req, res) => {
   if (!errors.isEmpty()) return fail(res, errors.array(), 422);
 
   try {
-    const { isActive } = req.body;
+    const { isActive, isVerified } = req.body;
+
+    const updateData = {};
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isVerified !== undefined) updateData.isVerified = isVerified;
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { isActive },
+      updateData,
       { new: true, runValidators: true }
     ).select('-passwordHash');
 

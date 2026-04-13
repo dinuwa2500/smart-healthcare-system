@@ -9,6 +9,7 @@ const TRANSITIONS = {
   pending: {
     confirmed:        'doctor',
     cancelled_patient:'patient',
+    cancelled_doctor: 'doctor',
   },
   confirmed: {
     completed:        'doctor',
@@ -24,7 +25,7 @@ const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
  * Returns { ok: true } or { ok: false, reason: string, code: number }
  */
 exports.validateTransition = function validateTransition(appointment, nextStatus, role) {
-  if (role === 'internal') return { ok: true };
+  if (role === 'internal' || role === 'admin') return { ok: true };
 
   const allowed = TRANSITIONS[appointment.status];
 

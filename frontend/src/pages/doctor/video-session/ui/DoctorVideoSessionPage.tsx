@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { sessionApi } from '@/src/entities/session/api';
 import type { VideoSession } from '@/src/entities/session/model';
 import { IssuePrescriptionModal } from '@/src/features/issue-prescription/ui/IssuePrescriptionModal';
+import api from '@/src/shared/api';
 import { Spinner } from '@/src/shared/ui/Spinner';
 
 type AgoraClient = import('agora-rtc-sdk-ng').IAgoraRTCClient;
@@ -15,9 +16,10 @@ type LocalVideo  = import('agora-rtc-sdk-ng').ICameraVideoTrack;
 export function DoctorVideoSessionPage() {
   const router        = useRouter();
   const searchParams  = useSearchParams();
-  const appointmentId = searchParams.get('appointmentId') ?? '';
+  const appointmentId = searchParams?.get('appointmentId') ?? '';
 
   const [session,  setSession]  = useState<VideoSession | null>(null);
+  const [appointment, setAppointment] = useState<any | null>(null);
   const [loading,  setLoading]  = useState(true);
   const [joined,   setJoined]   = useState(false);
   const [micOn,    setMicOn]    = useState(true);
@@ -34,9 +36,19 @@ export function DoctorVideoSessionPage() {
       setLoading(false);
       return;
     }
-    sessionApi.getByAppointment(appointmentId)
-      .then((r) => setSession(r.data.data))
-      .catch(() => toast.error('Session not found'))
+    
+    Promise.all([
+      sessionApi.getByAppointment(appointmentId),
+      api.get(`/appointments/${appointmentId}`)
+    ])
+      .then(([resSession, resAppt]) => {
+        setSession(resSession.data.data);
+        setAppointment(resAppt.data.data);
+      })
+      .catch((err) => {
+        console.error('Failed to load session/appointment:', err);
+        toast.error('Could not load call details');
+      })
       .finally(() => setLoading(false));
   }, [appointmentId]);
 
@@ -128,10 +140,15 @@ export function DoctorVideoSessionPage() {
 
   if (loading) return <div className="flex h-screen items-center justify-center"><Spinner size="lg" /></div>;
 
-  if (!session) {
+  // Only redirect/block if session ended AND we aren't currently in the "prescribe" flow
+  if (!session || (session.status === 'ended' && !prescribeOpen)) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-4 text-gray-500">
-        <p>{appointmentId ? 'No session found for this appointment.' : 'Missing appointment information for this video session.'}</p>
+        <p>
+          {session?.status === 'ended' 
+            ? 'This session has already ended.' 
+            : appointmentId ? 'No session found for this appointment.' : 'Missing appointment information for this video session.'}
+        </p>
         <button onClick={() => router.back()} className="text-teal-600 underline text-sm">Go back</button>
       </div>
     );
@@ -210,7 +227,8 @@ export function DoctorVideoSessionPage() {
           isOpen={prescribeOpen}
           onClose={() => { setPrescribeOpen(false); router.push('/doctor/appointments'); }}
           appointmentId={appointmentId}
-          patientId={''}
+          patientId={appointment?.patientId || session?.patientId || ''}
+          patientName={appointment?.patientName}
           onCompleted={handlePrescribed}
         />
       )}

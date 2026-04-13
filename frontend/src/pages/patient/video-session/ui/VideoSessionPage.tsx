@@ -14,7 +14,7 @@ type LocalVideo    = import('agora-rtc-sdk-ng').ICameraVideoTrack;
 export function VideoSessionPage() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const appointmentId = searchParams.get('appointmentId') ?? '';
+  const appointmentId = searchParams?.get('appointmentId') ?? '';
 
   const [session,   setSession]   = useState<VideoSession | null>(null);
   const [loading,   setLoading]   = useState(true);
@@ -132,10 +132,14 @@ export function VideoSessionPage() {
     );
   }
 
-  if (!session) {
+  if (!session || session.status === 'ended') {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-4 text-gray-500">
-        <p>{appointmentId ? 'No session found for this appointment.' : 'Missing appointment information for this video session.'}</p>
+        <p>
+          {session?.status === 'ended'
+            ? 'This consultation session has ended.'
+            : appointmentId ? 'No session found for this appointment.' : 'Missing appointment information for this video session.'}
+        </p>
         <button onClick={() => router.back()} className="text-teal-600 underline text-sm">
           Go back
         </button>

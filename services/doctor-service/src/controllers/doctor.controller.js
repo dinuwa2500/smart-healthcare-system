@@ -1,5 +1,7 @@
 'use strict';
 
+const ServiceClient = require('../utils/serviceClient');
+
 const { validationResult } = require('express-validator');
 const DoctorProfile      = require('../models/DoctorProfile.model');
 const DoctorSlot         = require('../models/DoctorSlot.model');
@@ -285,6 +287,9 @@ exports.myPatients = async (req, res) => {
   }
 };
 
+
+// ...
+
 // ── PATCH /doctors/:id/verify  (role:admin) ──────────────────
 exports.verifyDoctor = async (req, res) => {
   try {
@@ -295,6 +300,15 @@ exports.verifyDoctor = async (req, res) => {
     ).select('-__v');
 
     if (!profile) return fail(res, 'Doctor not found', 404);
+
+    // Sync with auth-service
+    try {
+      await ServiceClient.updateUserVerification(profile.authUserId, true);
+    } catch (authErr) {
+      console.error(`[doctor-service] Failed to sync verification to auth-service for ${profile.authUserId}:`, authErr.message);
+      // We don't necessarily fail the whole request, but we log the inconsistency
+    }
+
     return ok(res, profile);
   } catch (err) {
     console.error('[doctor] verifyDoctor:', err.message);

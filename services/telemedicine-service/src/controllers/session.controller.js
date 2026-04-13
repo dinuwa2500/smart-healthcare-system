@@ -63,10 +63,11 @@ exports.getSession = async (req, res) => {
     // Access guard: only involved patient / doctor / admin
     if (
       req.userRole !== 'admin' &&
-      req.userId !== session.patientId &&
-      req.userId !== session.doctorId
+      String(req.userId) !== String(session.patientId) &&
+      String(req.userId) !== String(session.doctorId)
     ) {
-      return fail(res, 'Forbidden', 403);
+      console.warn(`[session] 403: req.userId(${req.userId}) matches none of [${session.patientId}, ${session.doctorId}]`);
+      return fail(res, 'Forbidden: Not a participant', 403);
     }
 
     // Regenerate tokens if token issued more than (TOKEN_EXPIRY_SECS - REGEN_THRESHOLD) ago
@@ -154,6 +155,8 @@ function _sessionPayload(session) {
   return {
     sessionId:       session._id,
     appointmentId:   session.appointmentId,
+    patientId:       session.patientId,
+    doctorId:        session.doctorId,
     channelName:     session.channelName,
     patientUid:      session.patientUid,
     patientRtcToken: session.patientRtcToken,

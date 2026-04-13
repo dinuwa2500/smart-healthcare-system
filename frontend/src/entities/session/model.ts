@@ -1,6 +1,8 @@
 export interface VideoSession {
   sessionId: string;
   appointmentId: string;
+  patientId: string;
+  doctorId: string;
   channelName: string;
   patientUid: number;
   patientRtcToken: string;
