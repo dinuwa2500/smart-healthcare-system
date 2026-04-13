@@ -9,7 +9,6 @@ const router = Router();
 
 router.use(extractUser);
 
-// POST /symptoms/check  (role:patient)
 router.post(
   '/check',
   roleGuard('patient'),
