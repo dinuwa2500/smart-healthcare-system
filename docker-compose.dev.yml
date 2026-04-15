@@ -1,0 +1,104 @@
+# Development overrides – hot-reload via volume mounts + nodemon
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  api-gateway:
+    build:
+      target: development
+    volumes:
+      - ./services/api-gateway/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  auth-service:
+    build:
+      target: development
+    volumes:
+      - ./services/auth-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  patient-service:
+    build:
+      target: development
+    volumes:
+      - ./services/patient-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  doctor-service:
+    build:
+      target: development
+    volumes:
+      - ./services/doctor-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  appointment-service:
+    build:
+      target: development
+    volumes:
+      - ./services/appointment-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  payment-service:
+    build:
+      target: development
+    volumes:
+      - ./services/payment-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  notification-service:
+    build:
+      target: development
+    volumes:
+      - ./services/notification-service/src:/app/src:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  telemedicine-service:
+    build:
+      target: development
+    volumes:
+      - ./services/telemedicine-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  ai-symptom-service:
+    build:
+      target: development
+    volumes:
+      - ./services/ai-symptom-service/src:/app/src:delegated
+      - ./shared:/shared:delegated
+    environment:
+      NODE_ENV: development
+    command: ['npx', 'nodemon', 'src/index.js']
+
+  # frontend:
+  #   build:
+  #     target: development
+  #   volumes:
+  #     - ./frontend/src:/app/src:delegated
+  #     - ./frontend/app:/app/app:delegated
+  #     - ./frontend/public:/app/public:delegated
+  #   ports:
+  #     - '3001:3000'
+  #   environment:
+  #     NODE_ENV: development
+  #   command: ['npx', 'next', 'dev', '-p', '3000']
