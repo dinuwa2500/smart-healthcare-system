@@ -12,9 +12,13 @@ const DOCTOR_URL      = process.env.DOCTOR_SERVICE_URL      || 'http://doctor-se
  */
 exports.getPatientHistory = async (patientId, incomingHeaders) => {
   const { data } = await axios.get(
-    `${APPOINTMENT_URL}/appointments/patient/${patientId}`,
+    `${APPOINTMENT_URL}/appointments/my/history`,
     {
-      headers: { authorization: incomingHeaders['authorization'] || '' },
+      headers: {
+        authorization: incomingHeaders['authorization'] || '',
+        'x-user-id': incomingHeaders['x-user-id'] || '',
+        'x-user-role': incomingHeaders['x-user-role'] || '',
+      },
       timeout: 8000,
     }
   );
@@ -26,9 +30,13 @@ exports.getPatientHistory = async (patientId, incomingHeaders) => {
  */
 exports.getPatientPrescriptions = async (patientId, incomingHeaders) => {
   const { data } = await axios.get(
-    `${DOCTOR_URL}/doctors/prescriptions/patient/${patientId}`,
+    `${DOCTOR_URL}/doctors/prescriptions?patientId=${patientId}`,
     {
-      headers: { authorization: incomingHeaders['authorization'] || '' },
+      headers: {
+        authorization: incomingHeaders['authorization'] || '',
+        'x-user-id': incomingHeaders['x-user-id'] || '',
+        'x-user-role': incomingHeaders['x-user-role'] || '',
+      },
       timeout: 8000,
     }
   );

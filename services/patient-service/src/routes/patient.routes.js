@@ -35,6 +35,7 @@ router.get(
 // ── Reports ──────────────────────────────────────────────────
 router.post('/me/reports', upload.single('report'), ctrl.uploadReport);
 router.get('/me/reports', ctrl.listReports);
+router.get('/:id/reports', [param('id').isMongoId().withMessage('Invalid patient ID')], ctrl.listReportsByPatient);
 
 // ── Cross-service data ───────────────────────────────────────
 router.get('/me/history', ctrl.getHistory);

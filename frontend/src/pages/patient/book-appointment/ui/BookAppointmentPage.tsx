@@ -242,7 +242,7 @@ function ReasonStep({ doctor, date, time, fee, onNext, onBack }: {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Please describe your symptoms or what you'd like to discuss during the consultation..."
-          className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50/50 p-4 text-sm text-slate-700 placeholder:text-slate-400 outline-none transition-all focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/5 resize-none"
+          className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50/50 p-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/5 resize-none"
         />
       </div>
 

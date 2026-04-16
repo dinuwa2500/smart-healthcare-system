@@ -73,6 +73,8 @@ services:
       NODE_PATH: /app/node_modules
     depends_on:
       - mongodb
+    volumes:
+      - patient_uploads:/app/uploads
 
   # ── Doctor Service (port 4002) ─────────────────────────────
   doctor-service:
@@ -185,3 +187,4 @@ services:
 volumes:
   mongo_data:
   rabbitmq_data:
+  patient_uploads:

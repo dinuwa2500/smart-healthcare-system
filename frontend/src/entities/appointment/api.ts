@@ -45,4 +45,7 @@ export const appointmentApi = {
 
   getDoctorWeek: () =>
     api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/all'),
+
+  getDoctorAll: () =>
+    api.get<{ success: boolean; data: Appointment[] }>('/appointments/doctor/all'),
 };

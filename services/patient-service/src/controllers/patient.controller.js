@@ -137,16 +137,67 @@ exports.listReports = async (req, res) => {
   }
 };
 
-// ── GET /files/:patientId/:filename  (protected sendFile) ────
-exports.serveFile = (req, res) => {
-  const { patientId, filename } = req.params;
-  const filePath = path.join('/app/uploads', patientId, filename);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('[patient] serveFile:', err.message);
-      return res.status(404).json({ success: false, error: 'File not found' });
+// ── GET /patients/:id/reports (doctor | admin) ───────────────
+exports.listReportsByPatient = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Security: Only doctor or admin can view other people's reports
+    if (req.userRole === 'patient' && String(req.userId) !== id) {
+       // Check if 'id' is their authUserId too
+       const me = await PatientProfile.findOne({ authUserId: req.userId });
+       if (!me || me._id.toString() !== id) {
+         return fail(res, 'Forbidden: You can only view your own reports', 403);
+       }
     }
-  });
+
+    let profile = null;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      profile = await PatientProfile.findById(id);
+    }
+    if (!profile) {
+      profile = await PatientProfile.findOne({ authUserId: id });
+    }
+
+    if (!profile) return fail(res, 'Patient not found', 404);
+
+    const reports = await PatientReport.find({ patientId: profile._id })
+      .sort({ uploadedAt: -1 });
+
+    return ok(res, reports.map(serializeReport));
+  } catch (err) {
+    console.error('[patient] listReportsByPatient:', err.message);
+    return fail(res, 'Internal server error', 500);
+  }
+};
+
+// ── GET /files/:patientId/:filename  (protected sendFile) ────
+exports.serveFile = async (req, res) => {
+  try {
+    const { patientId, filename } = req.params;
+    let actualAuthId = patientId;
+
+    // If patientId is a MongoID, it might be the profile _id
+    if (patientId.match(/^[0-9a-fA-F]{24}$/)) {
+      const profile = await PatientProfile.findById(patientId);
+      if (profile) {
+        actualAuthId = profile.authUserId;
+      }
+    }
+
+    const filePath = path.join('/app/uploads', actualAuthId, filename);
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error('[patient] serveFile:', err.message);
+        if (!res.headersSent) {
+          return res.status(404).json({ success: false, error: 'File not found' });
+        }
+      }
+    });
+  } catch (err) {
+    console.error('[patient] serveFile error:', err.message);
+    return res.status(500).json({ success: false, error: 'Internal server error' });
+  }
 };
 
 // ── GET /patients/me/history ─────────────────────────────────
@@ -155,7 +206,7 @@ exports.getHistory = async (req, res) => {
     const profile = await PatientProfile.findOne({ authUserId: req.userId });
     if (!profile) return fail(res, 'Patient profile not found', 404);
 
-    const data = await svc.getPatientHistory(profile._id.toString(), req.headers);
+    const data = await svc.getPatientHistory(profile.authUserId, req.headers);
     return ok(res, data);
   } catch (err) {
     console.error('[patient] getHistory:', err.message);
@@ -170,7 +221,7 @@ exports.getPrescriptions = async (req, res) => {
     const profile = await PatientProfile.findOne({ authUserId: req.userId });
     if (!profile) return fail(res, 'Patient profile not found', 404);
 
-    const data = await svc.getPatientPrescriptions(profile._id.toString(), req.headers);
+    const data = await svc.getPatientPrescriptions(profile.authUserId, req.headers);
     return ok(res, data);
   } catch (err) {
     console.error('[patient] getPrescriptions:', err.message);

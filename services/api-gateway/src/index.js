@@ -16,12 +16,12 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3001';
 app.use(cors({ credentials: true, origin: true })); // Reflect origin for reliability with credentials
 app.use(morgan('combined'));
 
-// ── Health check ────────────────────────────────────────────
+// ── Health check 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'api-gateway', timestamp: new Date().toISOString() });
 });
 
-// ── Service route map ────────────────────────────────────────
+// ── Service route map
 const routes = {
   '/auth':         `http://auth-service:${process.env.AUTH_SERVICE_PORT || 4000}`,
   '/patients':     `http://patient-service:${process.env.PATIENT_SERVICE_PORT || 4001}`,

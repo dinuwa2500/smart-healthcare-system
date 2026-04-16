@@ -28,6 +28,26 @@ class ServiceClient {
       throw err;
     }
   }
+
+  static async getPatientProfile(patientId) {
+    try {
+      const PATIENT_SERVICE_URL = process.env.PATIENT_SERVICE_URL || 'http://patient-service:4001';
+      const response = await fetch(`${PATIENT_SERVICE_URL}/patients/${patientId}`, {
+        method: 'GET',
+        headers: {
+          'X-Internal-Secret': INTERNAL_SECRET,
+          'X-User-Role': 'doctor',
+        },
+      });
+
+      if (!response.ok) return null;
+      const json = await response.json();
+      return json.data;
+    } catch (err) {
+      console.error(`[doctor-service] Failed to fetch patient ${patientId}:`, err.message);
+      return null;
+    }
+  }
 }
 
 module.exports = ServiceClient;

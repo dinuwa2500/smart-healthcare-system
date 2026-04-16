@@ -28,7 +28,7 @@ router.get('/me/patients',      extractUser, roleGuard('doctor'), ctrl.myPatient
 router.get(
   '/prescriptions',
   extractUser,
-  roleGuard(['doctor', 'admin']),
+  roleGuard(['doctor', 'admin', 'patient']),
   ctrl.prescriptionsByPatient
 );
 

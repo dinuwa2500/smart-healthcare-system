@@ -110,7 +110,7 @@ function PatientPanel({ patient }: { patient: PatientProfile }) {
                   <p className="text-xs text-slate-400">{r.description} · {formatDate(r.createdAt)}</p>
                 </div>
                 <button
-                  onClick={() => handleDownload(patient._id, r)}
+                  onClick={() => handleDownload(patient.authUserId, r)}
                   className="rounded-2xl p-2.5 transition-colors hover:bg-teal-50"
                 >
                   <Download className="h-4 w-4 text-teal-600" />
@@ -205,7 +205,7 @@ export function PatientRecordsPage() {
                 placeholder="Search patients…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-100"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-slate-900 outline-none transition focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-100"
               />
             </div>
             <div className="rounded-[24px] border border-slate-100 bg-slate-50/70 overflow-hidden">

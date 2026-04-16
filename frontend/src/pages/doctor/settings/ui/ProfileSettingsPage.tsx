@@ -275,7 +275,7 @@ export function ProfileSettingsPage() {
                       onChange={(e) =>
                         setForm({ ...form, profilePicture: e.target.value })
                       }
-                      className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-xs font-mono text-slate-600 outline-none transition-all focus:border-indigo-500 focus:bg-white shadow-sm'
+                      className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-xs font-mono text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white shadow-sm'
                     />
                     <p className='text-[10px] text-slate-400 font-medium italic px-1'>
                       Provide a direct image URL (PNG, JPG) for best
@@ -401,7 +401,7 @@ export function ProfileSettingsPage() {
                                 e.target.value,
                               )
                             }
-                            className='w-full border-none p-0 text-sm font-bold text-slate-700 placeholder:text-slate-300 outline-none'
+                            className='w-full border-none p-0 text-sm font-bold text-slate-900 placeholder:text-slate-300 outline-none'
                           />
                         </div>
                         <div className='space-y-1'>
@@ -464,7 +464,7 @@ export function ProfileSettingsPage() {
                       value={newLanguage}
                       onChange={(e) => setNewLanguage(e.target.value)}
                       onKeyDown={addLanguage}
-                      className='w-full h-11 pl-11 rounded-xl border-none bg-slate-50 text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-slate-100 transition-all'
+                      className='w-full h-11 pl-11 rounded-xl border-none bg-slate-50 text-sm font-medium text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-slate-100 transition-all'
                     />
                   </div>
                 </div>
@@ -521,7 +521,7 @@ export function ProfileSettingsPage() {
                   value={form.bio}
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   placeholder='Articulate your medical journey, philosophy, and expertise...'
-                  className='w-full rounded-[40px] border-2 border-slate-100 bg-white p-8 pl-18 text-base font-medium leading-relaxed text-slate-700 placeholder:text-slate-300 outline-none transition-all focus:border-indigo-500 focus:ring-[20px] focus:ring-indigo-500/5 resize-none shadow-sm'
+                  className='w-full rounded-[40px] border-2 border-slate-100 bg-white p-8 pl-18 text-base font-medium leading-relaxed text-slate-900 placeholder:text-slate-300 outline-none transition-all focus:border-indigo-500 focus:ring-[20px] focus:ring-indigo-500/5 resize-none shadow-sm'
                 />
               </div>
             </section>

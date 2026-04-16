@@ -69,7 +69,7 @@ export default function RegisterPage() {
           <div className="flex flex-col gap-1">
             <label htmlFor="role" className="text-sm font-medium text-gray-700">I am a</label>
             <select id="role" value={form.role} onChange={set('role')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
               <option value="patient">Patient</option>
               <option value="doctor">Doctor</option>
             </select>
@@ -79,7 +79,7 @@ export default function RegisterPage() {
             <div className="flex flex-col gap-1 animate-in fade-in slide-in-from-top-2 duration-300">
               <label htmlFor="specialization" className="text-sm font-medium text-gray-700">Specialization</label>
               <select id="specialization" value={form.specialization} onChange={set('specialization')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
                 <option value="General Practice">General Practice</option>
                 <option value="Cardiology">Cardiology</option>
                 <option value="Neurology">Neurology</option>

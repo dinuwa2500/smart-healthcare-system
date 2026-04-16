@@ -3,7 +3,7 @@
 exports.extractUser = function extractUser(req, res, next) {
   const isInternal = req.headers['x-internal-secret'] === (process.env.INTERNAL_SERVICE_SECRET || 'mediconnect_secret_2024');
   if (isInternal) {
-    req.userRole = 'internal';
+    req.userRole = 'admin';
     req.userId = 'system';
     return next();
   }

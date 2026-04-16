@@ -236,7 +236,7 @@ export function PatientProfilePage() {
                       onChange={(e) =>
                         setForm({ ...form, profilePicture: e.target.value })
                       }
-                      className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-xs font-mono text-slate-600 outline-none transition-all focus:border-teal-500 focus:bg-white shadow-sm'
+                      className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-xs font-mono text-slate-900 outline-none transition-all focus:border-teal-500 focus:bg-white shadow-sm'
                     />
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export function PatientProfilePage() {
                         address: { ...form.address, street: e.target.value },
                       })
                     }
-                    className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-sm font-bold'
+                    className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-sm font-bold text-slate-900'
                   />
                 </div>
                 <div className='space-y-2'>
@@ -346,7 +346,7 @@ export function PatientProfilePage() {
                         address: { ...form.address, city: e.target.value },
                       })
                     }
-                    className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-sm font-bold'
+                    className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-sm font-bold text-slate-900'
                   />
                 </div>
                 <div className='space-y-2'>
@@ -364,7 +364,7 @@ export function PatientProfilePage() {
                         },
                       })
                     }
-                    className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-sm font-bold'
+                    className='w-full rounded-2xl border-2 border-slate-100 bg-white/50 p-4 text-sm font-bold text-slate-900'
                   />
                 </div>
               </div>
@@ -396,7 +396,7 @@ export function PatientProfilePage() {
                       value={newAllergy}
                       onChange={(e) => setNewAllergy(e.target.value)}
                       onKeyDown={addAllergy}
-                      className='w-full h-11 px-4 rounded-xl border-none bg-slate-50 text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-teal-100 transition-all'
+                      className='w-full h-11 px-4 rounded-xl border-none bg-slate-50 text-sm font-medium text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-teal-100 transition-all'
                     />
                   </div>
                 </div>

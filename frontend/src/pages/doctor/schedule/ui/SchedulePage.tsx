@@ -44,10 +44,22 @@ export function SchedulePage() {
   // Pre-fill from existing slots
   useEffect(() => {
     doctorApi.getMe()
-      .then((res) => {
-        // getMe doesn't return slots; load via getSlots isn't needed —
-        // we rely on setSlots overwrite. Start empty on first load.
-        void res;
+      .then(async (res) => {
+        const profile = res.data.data;
+        const slotsRes = await doctorApi.getSlots(profile._id);
+        const slots = slotsRes.data.data;
+
+        setGrid((prev) => {
+          const next = prev.map((r) => [...r]);
+          slots.forEach((s) => {
+            const dayIdx = s.dayOfWeek; // 0=Mon
+            const slotIdx = SLOTS.indexOf(s.startTime);
+            if (dayIdx >= 0 && dayIdx < 7 && slotIdx !== -1) {
+              next[dayIdx][slotIdx] = s.isActive;
+            }
+          });
+          return next;
+        });
       })
       .catch(() => {/* no profile yet */})
       .finally(() => setLoading(false));
@@ -83,7 +95,7 @@ export function SchedulePage() {
       const activeSlots = grid.flatMap((dayRow, dayIdx) =>
         dayRow
           .map((active, slotIdx) => active ? {
-            dayOfWeek:   dayIdx + 1,          // 1=Mon
+            dayOfWeek:   dayIdx,              // 0=Mon, ..., 6=Sun
             startTime:   SLOTS[slotIdx],
             duration:    30,
             isActive:    true,

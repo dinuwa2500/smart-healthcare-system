@@ -62,6 +62,16 @@ router.patch(
   ctrl.updateStatus
 );
 
+// Internal-only: record payment without touching appointment status
+router.patch(
+  '/:id/payment',
+  [
+    param('id').isMongoId(),
+    body('paymentId').notEmpty().withMessage('paymentId required'),
+  ],
+  ctrl.recordPayment
+);
+
 router.patch(
   '/:id/agora',
   [

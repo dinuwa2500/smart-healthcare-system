@@ -220,7 +220,7 @@ export function SymptomCheckPage() {
                 value={symptoms}
                 onChange={(e) => setSymptoms(e.target.value)}
                 placeholder="e.g. I have a persistent headache on the right side for 3 days, along with sensitivity to light…"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                 required
               />
               <p className={cn('mt-1 text-xs', symptoms.length < 10 && symptoms.length > 0 ? 'text-red-500' : 'text-gray-400')}>
@@ -259,7 +259,7 @@ export function SymptomCheckPage() {
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   placeholder="e.g. 2 days"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -275,7 +275,7 @@ export function SymptomCheckPage() {
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
                   placeholder="Your age"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div>

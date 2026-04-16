@@ -1,3 +1,26 @@
+export interface PrescriptionMedication {
+  name: string;
+  dosage: string;
+  frequency: string;
+  durationDays: number;
+  instructions?: string;
+}
+
+export interface Prescription {
+  _id: string;
+  appointmentId: string;
+  patientId: string;
+  doctorId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    specialization: string;
+  } | string;
+  medications: PrescriptionMedication[];
+  notes: string;
+  createdAt: string;
+}
+
 export interface PatientProfile {
   _id: string;
   authUserId: string;

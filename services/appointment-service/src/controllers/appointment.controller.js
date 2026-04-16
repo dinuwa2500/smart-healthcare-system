@@ -1,10 +1,11 @@
 'use strict';
 
-const { validationResult } = require('express-validator');
-const Appointment          = require('../models/Appointment.model');
-const { ok, fail }         = require('../utils/response');
-const { validateTransition }= require('../utils/transitions');
-const mq                   = require('../publishers/rabbitmq');
+const { validationResult }         = require('express-validator');
+const Appointment                  = require('../models/Appointment.model');
+const { ok, fail }                 = require('../utils/response');
+const { validateTransition }       = require('../utils/transitions');
+const mq                           = require('../publishers/rabbitmq');
+const { enrichAppointmentPayload } = require('../utils/serviceClient');
 
 // ── POST /appointments  (role:patient) ───────────────────────
 exports.book = async (req, res) => {
@@ -79,30 +80,34 @@ exports.updateStatus = async (req, res) => {
     if (finalReason) appt.doctorNotes = finalReason;
     await appt.save();
 
-    // Publish event
-    if (nextStatus === 'confirmed') {
-      mq.publish('appointment.confirmed', {
-        appointmentId:    appt._id,
-        agoraChannelName: appt.agoraChannelName || null,
-        patientId:        appt.patientId,
-        doctorId:         appt.doctorId,
-      });
-    } else if (nextStatus === 'cancelled_patient' || nextStatus === 'cancelled_doctor') {
-      mq.publish('appointment.cancelled', {
-        appointmentId: appt._id,
-        cancelledBy:   req.userRole,
-        reason:        reason || '',
-        patientId:     appt.patientId,
-        doctorId:      appt.doctorId,
-      });
-    } else if (nextStatus === 'completed') {
-      mq.publish('appointment.completed', {
-        appointmentId:  appt._id,
-        prescriptionId: prescriptionId || null,
-        patientId:      appt.patientId,
-        doctorId:       appt.doctorId,
-      });
-    }
+    // Publish event – enrich with contact details asynchronously (fire-and-forget)
+    setImmediate(async () => {
+      try {
+        const enriched = await enrichAppointmentPayload(appt);
+
+        if (nextStatus === 'confirmed') {
+          mq.publish('appointment.confirmed', {
+            ...enriched,
+            agoraChannelName: appt.agoraChannelName || null,
+          });
+
+        } else if (nextStatus === 'cancelled_patient' || nextStatus === 'cancelled_doctor') {
+          mq.publish('appointment.cancelled', {
+            ...enriched,
+            cancelledBy: req.userRole,
+            reason:      finalReason || '',
+          });
+
+        } else if (nextStatus === 'completed') {
+          mq.publish('appointment.completed', {
+            ...enriched,
+            prescriptionId: prescriptionId || null,
+          });
+        }
+      } catch (enrichErr) {
+        console.error('[appointment] Failed to enrich event payload:', enrichErr.message);
+      }
+    });
 
     return ok(res, appt);
   } catch (err) {
@@ -141,19 +146,28 @@ exports.cancel = async (req, res) => {
 };
 
 // ── GET /appointments/my/upcoming  (role:patient) ────────────
+// Pending: ALL, regardless of date (doctor hasn't accepted yet — must always be visible).
+// Confirmed: only future slots (past confirmed = completed/no_show, handled by history).
 exports.myUpcoming = async (req, res) => {
   try {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
     const appts = await Appointment.find({
       patientId: req.userId,
-      status: { $in: ['pending', 'confirmed'] },
-      slotDate: { $gte: new Date() },
-    }).sort({ slotDate: 1 });
+      $or: [
+        { status: 'pending' },                                          // all pending, any date
+        { status: 'confirmed', slotDate: { $gte: startOfToday } },     // confirmed from today onward
+      ],
+    }).sort({ slotDate: 1, slotTime: 1 });
+
     return ok(res, appts);
   } catch (err) {
     console.error('[appointment] myUpcoming:', err.message);
     return fail(res, 'Internal server error', 500);
   }
 };
+
 
 // ── GET /appointments/my/history  (role:patient) ─────────────
 exports.myHistory = async (req, res) => {
@@ -241,3 +255,26 @@ exports.setAgora = async (req, res) => {
     return fail(res, 'Internal server error', 500);
   }
 };
+
+// ── PATCH /appointments/:id/payment  (internal – payment-service only) ────
+// Records that payment has been made WITHOUT changing appointment status.
+// The appointment stays 'pending' until the doctor explicitly accepts it.
+exports.recordPayment = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return fail(res, errors.array(), 422);
+
+  try {
+    const appt = await Appointment.findByIdAndUpdate(
+      req.params.id,
+      { paymentStatus: 'paid', paymentId: req.body.paymentId },
+      { new: true }
+    );
+    if (!appt) return fail(res, 'Appointment not found', 404);
+    console.log(`[appointment] Payment recorded for ${req.params.id}, status remains: ${appt.status}`);
+    return ok(res, { id: appt._id, paymentStatus: appt.paymentStatus, status: appt.status });
+  } catch (err) {
+    console.error('[appointment] recordPayment:', err.message);
+    return fail(res, 'Internal server error', 500);
+  }
+};
+

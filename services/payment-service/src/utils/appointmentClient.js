@@ -5,18 +5,21 @@ const axios = require('axios');
 const APPOINTMENT_URL = process.env.APPOINTMENT_SERVICE_URL || 'http://appointment-service:4003';
 
 /**
- * PATCH appointment status to 'confirmed' after payment success.
+ * Record a successful payment against an appointment.
+ * This does NOT change the appointment status — it remains 'pending'
+ * until the doctor explicitly accepts via the doctor dashboard.
  */
 exports.confirmAppointment = async (appointmentId, paymentId) => {
   await axios.patch(
-    `${APPOINTMENT_URL}/appointments/${appointmentId}/status`,
-    { status: 'confirmed', paymentStatus: 'paid', paymentId },
+    `${APPOINTMENT_URL}/appointments/${appointmentId}/payment`,
+    { paymentId },
     { 
       timeout: 5000,
-      headers: { 'X-Internal-Secret': process.env.INTERNAL_SERVICE_SECRET }
+      headers: { 'X-Internal-Secret': process.env.INTERNAL_SERVICE_SECRET || 'mediconnect_secret_2024' }
     }
   );
 };
+
 
 /**
  * Fetch appointment details by ID.

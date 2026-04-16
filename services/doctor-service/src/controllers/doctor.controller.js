@@ -173,6 +173,10 @@ exports.setSlots = async (req, res) => {
     if (!profile) return fail(res, 'Doctor profile not found', 404);
 
     const slots = Array.isArray(req.body) ? req.body : [req.body];
+
+    // Overwrite: delete existing pattern first
+    await DoctorSlot.deleteMany({ doctorId: profile._id });
+
     const created = await DoctorSlot.insertMany(
       slots.map((s) => ({ ...s, doctorId: profile._id }))
     );
@@ -277,10 +281,26 @@ exports.myPatients = async (req, res) => {
     const profile = await DoctorProfile.findOne({ authUserId: req.userId });
     if (!profile) return fail(res, 'Doctor profile not found', 404);
 
-    const rawPatients = await DoctorPrescription.distinct('patientId', {
+    const rawPatientIds = await DoctorPrescription.distinct('patientId', {
       doctorId: profile._id,
     });
-    return ok(res, { patients: rawPatients, total: rawPatients.length });
+
+    const patientProfiles = await Promise.all(
+      rawPatientIds.map(id => ServiceClient.getPatientProfile(id))
+    );
+
+    let patients = patientProfiles.filter(p => p !== null);
+
+    // Optional name filtering
+    if (req.query.name) {
+      const q = req.query.name.toLowerCase();
+      patients = patients.filter(p => 
+        p.firstName.toLowerCase().includes(q) || 
+        p.lastName.toLowerCase().includes(q)
+      );
+    }
+
+    return ok(res, { patients, total: patients.length });
   } catch (err) {
     console.error('[doctor] myPatients:', err.message);
     return fail(res, 'Internal server error', 500);
@@ -322,6 +342,11 @@ exports.prescriptionsByPatient = async (req, res) => {
   try {
     const { patientId } = req.query;
     if (!patientId) return fail(res, 'patientId query param is required', 400);
+
+    // Security: Patient role may only view their OWN prescriptions
+    if (req.userRole === 'patient' && String(req.userId) !== String(patientId)) {
+      return fail(res, 'Forbidden: You can only view your own prescriptions', 403);
+    }
 
     const prescriptions = await DoctorPrescription.find({ patientId })
       .populate('doctorId', 'firstName lastName specialization')

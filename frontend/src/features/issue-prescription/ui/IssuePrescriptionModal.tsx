@@ -167,7 +167,7 @@ export function IssuePrescriptionModal({
                           value={med.name} 
                           onChange={(e) => updateMed(i, 'name', e.target.value)}
                           className={cn(
-                            "w-full rounded-xl border bg-white px-4 py-2.5 text-sm transition-shadow focus:outline-none focus:ring-2",
+                            "w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-900 transition-shadow focus:outline-none focus:ring-2",
                             showErrors && !med.name.trim() ? "border-red-300 focus:ring-red-200" : "border-slate-200 focus:border-teal-500 focus:ring-teal-100"
                           )}
                         />
@@ -181,7 +181,7 @@ export function IssuePrescriptionModal({
                           value={med.dosage} 
                           onChange={(e) => updateMed(i, 'dosage', e.target.value)}
                           className={cn(
-                            "w-full rounded-xl border bg-white px-4 py-2.5 text-sm transition-shadow focus:outline-none focus:ring-2",
+                            "w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-900 transition-shadow focus:outline-none focus:ring-2",
                             showErrors && !med.dosage.trim() ? "border-red-300 focus:ring-red-200" : "border-slate-200 focus:border-teal-500 focus:ring-teal-100"
                           )}
                         />
@@ -194,7 +194,7 @@ export function IssuePrescriptionModal({
                         <select
                           value={med.frequency}
                           onChange={(e) => updateMed(i, 'frequency', e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm transition-shadow focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 transition-shadow focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
                         >
                           {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
                         </select>
@@ -207,7 +207,7 @@ export function IssuePrescriptionModal({
                           max="365"
                           value={String(med.durationDays)}
                           onChange={(e) => updateMed(i, 'durationDays', Number(e.target.value))}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm transition-shadow focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 transition-shadow focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
                         />
                       </div>
                     </div>
@@ -218,7 +218,7 @@ export function IssuePrescriptionModal({
                         placeholder="e.g. Take after meals with plenty of water"
                         value={med.instructions} 
                         onChange={(e) => updateMed(i, 'instructions', e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm transition-shadow focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 transition-shadow focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
                       />
                     </div>
                   </div>
@@ -247,7 +247,7 @@ export function IssuePrescriptionModal({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add any specific diagnostic notes, follow-up instructions, or lifestyle recommendations for the patient here..."
-            className="w-full rounded-[20px] border border-slate-200 bg-slate-50 p-4 text-sm transition-shadow focus:border-teal-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-teal-50 resize-none"
+            className="w-full rounded-[20px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-900 transition-shadow focus:border-teal-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-teal-50 resize-none"
           />
         </div>
         
