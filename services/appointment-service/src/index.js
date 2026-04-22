@@ -5,12 +5,12 @@ const express = require('express');
 const helmet  = require('helmet');
 const morgan  = require('morgan');
 
-const { connectDB }      = require('../../shared/db');
+const { connectDB }      = require('../shared/db');
 const { connect: mqConnect } = require('./publishers/rabbitmq');
 const appointmentRoutes  = require('./routes/appointment.routes');
 
 const app  = express();
-const PORT = process.env.APPOINTMENT_SERVICE_PORT || 4003;
+const PORT = process.env.PORT || 4003;
 
 // ── Global middleware ────────────────────────────────────────
 app.use(helmet());

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: ai-symptom-service
-        image: mediconnect/ai-symptom-service:latest
+        image: mediconnect/ai-symptom-service:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4007

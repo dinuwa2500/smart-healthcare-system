@@ -5,12 +5,12 @@ const express = require('express');
 const helmet  = require('helmet');
 const morgan  = require('morgan');
 
-const { connectDB }          = require('../../shared/db');
+const { connectDB }          = require('../shared/db');
 const { connect: mqConnect } = require('./publishers/rabbitmq');
 const paymentRoutes          = require('./routes/payment.routes');
 
 const app  = express();
-const PORT = process.env.PAYMENT_SERVICE_PORT || 4004;
+const PORT = process.env.PORT || 4004;
 
 // ── Global middleware ────────────────────────────────────────
 app.use(helmet());

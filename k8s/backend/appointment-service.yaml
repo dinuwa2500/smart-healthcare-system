@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: appointment-service
-        image: mediconnect/appointment-service:latest
+        image: mediconnect/appointment-service:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4003

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: doctor-service
-        image: mediconnect/doctor-service:latest
+        image: mediconnect/doctor-service:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4002

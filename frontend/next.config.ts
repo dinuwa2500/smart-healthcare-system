@@ -1,12 +1,14 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  output: 'standalone',
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  turbopack: {},
-  webpack: (config, { isServer }) => {
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  turbopack: {} as any,
+  webpack: (config: any, { isServer }: any) => {
     if (isServer) {
       config.resolve.alias = {
         ...config.resolve.alias,

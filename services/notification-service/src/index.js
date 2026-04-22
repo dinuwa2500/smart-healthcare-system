@@ -5,7 +5,7 @@ const express = require('express');
 const { start: startConsumer } = require('./consumers/consumer');
 
 const app  = express();
-const PORT = process.env.NOTIFICATION_SERVICE_PORT || 4005;
+const PORT = process.env.PORT || 4005;
 
 // ── Health check (only HTTP endpoint) ───────────────────────
 app.get('/health', (_req, res) => {

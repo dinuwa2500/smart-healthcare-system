@@ -6,11 +6,11 @@ const helmet  = require('helmet');
 const cors    = require('cors');
 const morgan  = require('morgan');
 
-const { connectDB }   = require('../../shared/db');
+const { connectDB }   = require('../shared/db');
 const symptomRoutes   = require('./routes/symptom.routes');
 
 const app  = express();
-const PORT = process.env.AI_SYMPTOM_SERVICE_PORT || 4007;
+const PORT = process.env.PORT || 4007;
 
 // ── Global middleware ────────────────────────────────────────
 app.use(helmet());

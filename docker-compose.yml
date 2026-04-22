@@ -26,6 +26,7 @@ services:
 
   # ── API Gateway (port 3000) ────────────────────────────────
   api-gateway:
+    image: mediconnect/api-gateway:latest
     build:
       context: .
       dockerfile: services/api-gateway/Dockerfile
@@ -46,6 +47,7 @@ services:
 
   # ── Auth Service (port 4000) ───────────────────────────────
   auth-service:
+    image: mediconnect/auth-service:latest
     build:
       context: .
       dockerfile: services/auth-service/Dockerfile
@@ -61,6 +63,7 @@ services:
 
   # ── Patient Service (port 4001) ────────────────────────────
   patient-service:
+    image: mediconnect/patient-service:latest
     build:
       context: .
       dockerfile: services/patient-service/Dockerfile
@@ -78,6 +81,7 @@ services:
 
   # ── Doctor Service (port 4002) ─────────────────────────────
   doctor-service:
+    image: mediconnect/doctor-service:latest
     build:
       context: .
       dockerfile: services/doctor-service/Dockerfile
@@ -93,6 +97,7 @@ services:
 
   # ── Appointment Service (port 4003) ────────────────────────
   appointment-service:
+    image: mediconnect/appointment-service:latest
     build:
       context: .
       dockerfile: services/appointment-service/Dockerfile
@@ -109,6 +114,7 @@ services:
 
   # ── Payment Service (port 4004) ────────────────────────────
   payment-service:
+    image: mediconnect/payment-service:latest
     build:
       context: .
       dockerfile: services/payment-service/Dockerfile
@@ -125,6 +131,7 @@ services:
 
   # ── Notification Service (port 4005) ──────────────────────
   notification-service:
+    image: mediconnect/notification-service:latest
     build:
       context: .
       dockerfile: services/notification-service/Dockerfile
@@ -139,6 +146,7 @@ services:
 
   # ── Telemedicine Service (port 4006) ──────────────────────
   telemedicine-service:
+    image: mediconnect/telemedicine-service:latest
     build:
       context: .
       dockerfile: services/telemedicine-service/Dockerfile
@@ -154,6 +162,7 @@ services:
 
   # ── AI Symptom Service (port 4007) ────────────────────────
   ai-symptom-service:
+    image: mediconnect/ai-symptom-service:latest
     build:
       context: .
       dockerfile: services/ai-symptom-service/Dockerfile
@@ -167,22 +176,36 @@ services:
     depends_on:
       - mongodb
 
-  # ── Frontend / Next.js (port 3001) ──────────────────────
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #     args:
-  #       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000/api}
-  #       NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
-  #       NEXT_PUBLIC_AGORA_APP_ID: ${NEXT_PUBLIC_AGORA_APP_ID}
-  #   container_name: mediconnect-frontend
-  #   restart: unless-stopped
-  #   ports:
-  #     - '3001:3000'
-  #   env_file: .env
-  #   depends_on:
-  #     - api-gateway
+  # Frontend / Next.js (port 3001) 
+  frontend:
+    image: mediconnect/frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000/api}
+        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+        NEXT_PUBLIC_AGORA_APP_ID: ${NEXT_PUBLIC_AGORA_APP_ID}
+    container_name: mediconnect-frontend
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    env_file: .env
+    depends_on:
+      - api-gateway
+
+  nginx:
+    image: mediconnect/nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: mediconnect-nginx
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - api-gateway
+      - frontend
 
 volumes:
   mongo_data:

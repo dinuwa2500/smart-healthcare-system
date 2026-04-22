@@ -9,7 +9,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
-const PORT = process.env.API_GATEWAY_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3001';
@@ -23,17 +23,17 @@ app.get('/health', (_req, res) => {
 
 // ── Service route map
 const routes = {
-  '/auth':         `http://auth-service:${process.env.AUTH_SERVICE_PORT || 4000}`,
-  '/patients':     `http://patient-service:${process.env.PATIENT_SERVICE_PORT || 4001}`,
-  '/files':        `http://patient-service:${process.env.PATIENT_SERVICE_PORT || 4001}`,
-  '/doctors':      `http://doctor-service:${process.env.DOCTOR_SERVICE_PORT || 4002}`,
-  '/appointments': `http://appointment-service:${process.env.APPOINTMENT_SERVICE_PORT || 4003}`,
-  '/payments':     `http://payment-service:${process.env.PAYMENT_SERVICE_PORT || 4004}`,
-  '/notifications':`http://notification-service:${process.env.NOTIFICATION_SERVICE_PORT || 4005}`,
-  '/symptoms':     `http://ai-symptom-service:${process.env.AI_SYMPTOM_SERVICE_PORT || 4007}`,
-  '/sessions':     `http://telemedicine-service:${process.env.TELEMEDICINE_SERVICE_PORT || 4006}`,
-  '/telemedicine': `http://telemedicine-service:${process.env.TELEMEDICINE_SERVICE_PORT || 4006}`,
-  '/ai':           `http://ai-symptom-service:${process.env.AI_SYMPTOM_SERVICE_PORT || 4007}`,
+  '/auth':         process.env.AUTH_SERVICE_URL         || 'http://localhost:4000',
+  '/patients':     process.env.PATIENT_SERVICE_URL       || 'http://localhost:4001',
+  '/files':        process.env.PATIENT_SERVICE_URL       || 'http://localhost:4001',
+  '/doctors':      process.env.DOCTOR_SERVICE_URL        || 'http://localhost:4002',
+  '/appointments': process.env.APPOINTMENT_SERVICE_URL   || 'http://localhost:4003',
+  '/payments':     process.env.PAYMENT_SERVICE_URL       || 'http://localhost:4004',
+  '/notifications':process.env.NOTIFICATION_SERVICE_URL  || 'http://localhost:4005',
+  '/symptoms':     process.env.AI_SYMPTOM_SERVICE_URL    || 'http://localhost:4007',
+  '/sessions':     process.env.TELEMEDICINE_SERVICE_URL  || 'http://localhost:4006',
+  '/telemedicine': process.env.TELEMEDICINE_SERVICE_URL  || 'http://localhost:4006',
+  '/ai':           process.env.AI_SYMPTOM_SERVICE_URL    || 'http://localhost:4007',
 };
 
 app.use('/api', (req, _res, next) => {

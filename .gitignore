@@ -36,5 +36,6 @@ Thumbs.db
 coverage/
 
 
-#secretc
-*secrets.yaml
+# Secrets
+secrets.yml
+*secrets.yaml

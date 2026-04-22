@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: auth-service
-        image: mediconnect/auth-service:latest
+        image: mediconnect/auth-service:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4000

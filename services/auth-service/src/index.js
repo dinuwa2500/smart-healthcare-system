@@ -7,24 +7,24 @@ const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
-const { connectDB } = require('../../shared/db');
+const { connectDB } = require('../shared/db');
 const authRoutes = require('./routes/auth.routes');
 
 const app = express();
-const PORT = process.env.AUTH_SERVICE_PORT || 4000;
+const PORT = process.env.PORT || 4000;
 
-// ── Global middleware ────────────────────────────────────────
+// ── Global middleware 
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
-// ── Health check ────────────────────────────────────────────
+// ── Health check 
 app.get('/health', (_req, res) => {
   res.json({ success: true, data: { service: 'auth-service', status: 'ok', timestamp: new Date().toISOString() } });
 });
 
-// ── Routes ───────────────────────────────────────────────────
+// ── Routes 
 app.use('/auth', authRoutes);
 
 // ── 404 handler ──────────────────────────────────────────────

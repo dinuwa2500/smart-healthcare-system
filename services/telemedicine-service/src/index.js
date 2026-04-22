@@ -6,13 +6,13 @@ const helmet  = require('helmet');
 const cors    = require('cors');
 const morgan  = require('morgan');
 
-const { connectDB }          = require('../../shared/db');
+const { connectDB }          = require('../shared/db');
 const { connect: mqConnect } = require('./publishers/rabbitmq');
 const { start: startConsumer } = require('./consumers/consumer');
 const sessionRoutes          = require('./routes/session.routes');
 
 const app  = express();
-const PORT = process.env.TELEMEDICINE_SERVICE_PORT || 4006;
+const PORT = process.env.PORT || 4006;
 
 // ── Global middleware ────────────────────────────────────────
 app.use(helmet());

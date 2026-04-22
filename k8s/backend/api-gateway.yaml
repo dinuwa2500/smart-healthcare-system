@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: mediconnect/api-gateway:latest # CHANGE THIS to your actual image name
+        image: mediconnect/api-gateway:v3 
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
@@ -29,6 +29,7 @@ kind: Service
 metadata:
   name: api-gateway-service
 spec:
+  type: LoadBalancer
   selector:
     app: api-gateway
   ports:

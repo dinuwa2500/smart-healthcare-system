@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: telemedicine-service
-        image: mediconnect/telemedicine-service:latest
+        image: mediconnect/telemedicine-service:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4006

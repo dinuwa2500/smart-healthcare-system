@@ -4,7 +4,7 @@ WORKDIR /app
 RUN mkdir -p /app/uploads
 COPY services/patient-service/package*.json ./
 RUN npm install
-COPY shared/ /shared/
+COPY shared/ ./shared/
 COPY services/patient-service/ .
 EXPOSE 4001
 CMD ["node", "src/index.js"]
@@ -20,7 +20,7 @@ RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app/uploads
 COPY services/patient-service/package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
 
-COPY shared/ /shared/
+COPY shared/ ./shared/
 COPY --chown=appuser:appgroup services/patient-service/ .
 
 USER appuser

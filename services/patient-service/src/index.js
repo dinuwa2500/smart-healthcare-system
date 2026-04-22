@@ -6,13 +6,13 @@ const helmet  = require('helmet');
 const cors    = require('cors');
 const morgan  = require('morgan');
 
-const { connectDB }   = require('../../shared/db');
+const { connectDB }   = require('../shared/db');
 const patientRoutes   = require('./routes/patient.routes');
 const { extractUser, canAccessFile } = require('./middleware/verifyAccess');
 const patientCtrl     = require('./controllers/patient.controller');
 
 const app  = express();
-const PORT = process.env.PATIENT_SERVICE_PORT || 4001;
+const PORT = process.env.PORT || 4001;
 
 // ── Global middleware ────────────────────────────────────────
 app.use(helmet());
